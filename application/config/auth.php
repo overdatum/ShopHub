@@ -22,8 +22,8 @@ return array(
 	{
 		if (filter_var($id, FILTER_VALIDATE_INT) !== false)
 		{
-			return DB::table('users')->find($id);
-		} 
+			return Account::find($id);
+		}
 	},
 
 	/*
@@ -44,11 +44,11 @@ return array(
 
 	'attempt' => function($username, $password)
 	{
-		$user = DB::table('users')->where_username($username)->first();
+		$account = Account::where_email($email)->first();
 
-		if ( ! is_null($user) and Hash::check($password, $user->password))
+		if ( ! is_null($account) and Hash::check($password, $account->password))
 		{
-			return $user;
+			return $account;
 		}
 	},
 
