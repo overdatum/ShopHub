@@ -53,12 +53,12 @@ class Form extends \Laravel\Form {
 		array_unshift($args, $name);
 
 		// Build the HTML
-		$out  = '<div class="clearfix '.$class.'">';
+		$out  = '<div class="'.$class.'">';
 		if ( ! empty($label))
 		{
 			$out .= Form::label($name, $label, array('class' => 'control-label'));
 		}
-		$out .= '<div class="input">'.PHP_EOL;
+		$out .= '<div class="controls">'.PHP_EOL;
 		$out .= forward_static_call_array(array('Form', $type), $args);
 		foreach (array('error', 'warning', 'success') as $key)
 		{
