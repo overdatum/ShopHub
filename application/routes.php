@@ -33,11 +33,6 @@
 |
 */
 
-Router::register(array('GET /', 'GET /home'), function()
-{
-	return View::make('home.index');
-});
-
 /*
 |--------------------------------------------------------------------------
 | Route Filters
@@ -83,5 +78,26 @@ Filter::register('csrf', function()
 
 Filter::register('auth', function()
 {
-	if (Auth::guest()) return Redirect::to('login');
+	if (Auth::guest()) return Redirect::to('accounts/login');
+});
+
+Filter::register('can', function($action, $resource) {
+	if ( ! Authority::can($action, $resource)) return Redirect::to('home');
+});
+
+// Routes
+Router::register('GET /', 'frontend.home@index');
+Router::register(array('GET /home/(:any?)', 'PUT /home/(:any?)', 'DELETE /home/(:any?)', 'POST /home/(:any?)'), 'frontend.home@(:1)');
+Router::register(array('GET /account/(:any?)', 'PUT /account/(:any?)', 'DELETE /account/(:any?)', 'POST /account/(:any?)'), 'frontend.account@(:1)');
+Router::register('GET /admin', 'admin.dashboard@index');
+
+View::composer('layouts.default', function($view)
+{
+	Asset::container('header')->add('jquery', 'js/jquery.min.js');
+	Asset::container('header')->add('bootstrap', 'bootstrap/bootstrap.css');
+	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-buttons.js', 'jquery');
+	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-dropdown.js', 'jquery');
+	Asset::container('header')->add('main', 'css/main.css');
+
+	$view->footer = View::make('partials.footer');
 });
