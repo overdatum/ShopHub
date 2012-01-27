@@ -13,7 +13,7 @@
 
 			<?= HTML::menu($menu) ?>
 
-			<div class="btn-group language-picker pull-right">
+			<div class="btn-group pull-right">
 				<a class="btn no-click" href="#">Change language</a>
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 				<span class="caret"></span>
