@@ -42,7 +42,7 @@ return array(
 	|
 	*/
 
-	'attempt' => function($username, $password)
+	'attempt' => function($email, $password)
 	{
 		$account = Account::where_email($email)->first();
 
