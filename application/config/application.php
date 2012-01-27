@@ -27,7 +27,7 @@ return array(
 	|
 	*/
 
-	'index' => 'index.php',
+	'index' => '',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return array(
 	|
 	*/
 
-	'key' => '',
+	'key' => 'f43nffe#@^kffwefqcpmepwmfwrgn534',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -128,9 +128,11 @@ return array(
 		'Event'      => 'Laravel\\Event',
 		'File'       => 'Laravel\\File',
 		'Filter'     => 'Laravel\\Routing\\Filter',
-		'Form'       => 'Laravel\\Form',
+		//'Form'       => 'Laravel\\Form',
+		'Form'       => 'Twitter\\Bootstrap\\Form',
 		'Hash'       => 'Laravel\\Hash',
-		'HTML'       => 'Laravel\\HTML',
+		//'HTML'       => 'Laravel\\HTML',
+		'HTML'       => 'Twitter\\Bootstrap\\HTML',
 		'Input'      => 'Laravel\\Input',
 		'IoC'        => 'Laravel\\IoC',
 		'Lang'       => 'Laravel\\Lang',
