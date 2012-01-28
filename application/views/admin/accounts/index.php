@@ -1,5 +1,9 @@
 <div id="main">
 	<div class="page-header">
+		<div class="pull-right">
+			<input type="text" name="search"> &nbsp;
+			<a href="" class="btn primary"><i class="icon search"></i></a>
+		</div>
 		<h1>Accounts</h1>
 	</div>
 	<table class="table table-striped">

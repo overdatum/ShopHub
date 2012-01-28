@@ -1,6 +1,6 @@
 <?php
 class Admin_Accounts_Controller extends Controller {
-	
+
 	public $restful = true;
 	public $layout = true;
 
@@ -48,7 +48,7 @@ class Admin_Accounts_Controller extends Controller {
 		$this->layout->content = View::make('admin.accounts.add_success');
 	}
 
-	public function put_add()
+	public function post_add()
 	{
 		$account = new Account;
 
