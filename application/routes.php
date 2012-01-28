@@ -78,7 +78,7 @@ Filter::register('csrf', function()
 
 Filter::register('auth', function()
 {
-	if (Auth::guest()) return Redirect::to('accounts/login');
+	if (Auth::guest()) return Redirect::to('account/login');
 });
 
 Filter::register('can', function($action, $resource) {
