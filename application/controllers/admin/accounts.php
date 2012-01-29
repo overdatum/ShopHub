@@ -31,7 +31,7 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('home');
 		}
 
-		$this->layout->content = View::make('admin.accounts.index')->with('accounts', Account::all());
+		$this->layout->content = View::make('admin.accounts.index')->with('accounts', Account::with('roles')->get());
 	}
 
 	public function get_add()
@@ -44,10 +44,6 @@ class Admin_Accounts_Controller extends Controller {
 		$this->layout->content = View::make('admin.accounts.add');
 	}
 
-	public function get_add_success() {
-		$this->layout->content = View::make('admin.accounts.add_success');
-	}
-
 	public function post_add()
 	{
 		$account = new Account;
@@ -55,10 +51,12 @@ class Admin_Accounts_Controller extends Controller {
 		$errors = $account->validate_and_insert();
 		if(count($errors->all()) > 0)
 		{
-			return Redirect::to('admin/accounts/add')->with('errors', $errors);
+			return Redirect::to('admin/accounts/add')->with('errors', $errors)->with_input('except', array('password'));
 		}
 
-		return Redirect::to('admin/accounts/add_success');
+		Notification::success('Successfully created account');
+
+		return Redirect::to('admin/accounts/index');
 	}
 
 	public function get_edit($id = 0)
@@ -73,10 +71,6 @@ class Admin_Accounts_Controller extends Controller {
 		$this->layout->content = View::make('admin.accounts.edit')->with('account', $account);
 	}
 
-	public function get_edit_success() {
-		$this->layout->content = View::make('admin.accounts.edit_success');
-	}
-
 	public function put_edit($id = 0)
 	{
 		$account = Account::find($id);
@@ -88,10 +82,12 @@ class Admin_Accounts_Controller extends Controller {
 		$errors = $account->validate_and_update();
 		if(count($errors->all()) > 0)
 		{
-			return Redirect::to('admin/accounts/edit')->with('errors', $errors);
+			return Redirect::to('admin/accounts/edit')->with('errors', $errors)->with_input('except', array('password'));
 		}
 
-		return Redirect::to('admin/accounts/edit_success');
+		Notification::success('Successfully updated account');
+
+		return Redirect::to('admin/accounts/index');
 	}
 
 	public function get_delete($id = 0)
