@@ -1,6 +1,11 @@
 <?php
 class Role extends Eloquent\Model {
 
+	public function __construct()
+	{
+		//var_dump(func_get_args());
+	}
+
 	public function accounts()
 	{
 		return $this->has_and_belongs_to_many('Account');

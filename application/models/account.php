@@ -2,7 +2,7 @@
 class Account extends Eloquent\Model {
 
 	public static $timestamps = true;
-	
+	public static $per_page = 3;
 	public $rules = array(
 		'email' => 'required|email',
 		'password' => 'required',
@@ -16,7 +16,7 @@ class Account extends Eloquent\Model {
 
 	/**
 	 * Check if the account has a relation with the given role
-	 * 
+	 *
 	 * @param	string	$key	the role key
 	 * @return	boolean
 	 */
@@ -35,7 +35,7 @@ class Account extends Eloquent\Model {
 
 	/**
 	 * Check if the account has a relation with any of the given roles
-	 * 
+	 *
 	 * @param	array	$keys	the role keys
 	 * @return	boolean
 	 */

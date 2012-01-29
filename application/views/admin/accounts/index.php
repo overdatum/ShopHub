@@ -17,16 +17,9 @@
 			</tr>
 		</thead>
 		<tbody>
-		<?php foreach($accounts as $account): ?>
+		<?php foreach($accounts->results as $account): ?>
 			<tr>
 				<td>
-				<?php
-				var_dump($account->roles);
-					/*foreach($account->roles as $role)
-					{
-						var_dump($role);
-					}*/
-				?>
 					<h2><?= $account->name ?></h2>
 				</td>
 				<td>
@@ -34,11 +27,11 @@
 				</td>
 				<td>
 					<?php
-					/*foreach($account->roles as $role)
+					foreach($account->roles as $role)
 					{
-						echo '
-							<b>'.$role->lang()->name.'</b><br>';
-					}*/
+
+						echo '<b>'.$roles_lang[$role->id]->name.'</b><br>';
+					}
 					?>
 				</td>
 				<td width="120" style="text-align:right">
@@ -49,6 +42,7 @@
 		<?php endforeach ?>
 		</tbody>
 	</table>
+	<?= $accounts->links() ?>
 	<div class="pull-right">
 		<?= HTML::link('admin/accounts/add', 'Add account', array('class' => 'btn large primary')) ?>
 	</div>

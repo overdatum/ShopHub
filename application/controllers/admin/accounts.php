@@ -19,7 +19,9 @@ class Admin_Accounts_Controller extends Controller {
 			'title' => 'Admin | Accounts'
 		);
 
-		$this->layout = View::make('layouts.default')->with('header_data', $header_data)->with('menu_data', $menu_data);
+		$this->layout = View::make('layouts.default')
+							->with('header_data', $header_data)
+							->with('menu_data', $menu_data);
 
 		return $this->layout;
 	}
@@ -31,7 +33,15 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('home');
 		}
 
-		$this->layout->content = View::make('admin.accounts.index')->with('accounts', Account::with('roles')->get());
+		$roles_lang = array();
+		foreach(DB::table('role_lang')->get() as $role_lang)
+		{
+			$roles_lang[$role_lang->id] = $role_lang;
+		}
+
+		$this->layout->content = View::make('admin.accounts.index')
+									 ->with('accounts', Account::with('roles')->paginate(2))
+									 ->with('roles_lang', $roles_lang);
 	}
 
 	public function get_add()
@@ -51,7 +61,9 @@ class Admin_Accounts_Controller extends Controller {
 		$errors = $account->validate_and_insert();
 		if(count($errors->all()) > 0)
 		{
-			return Redirect::to('admin/accounts/add')->with('errors', $errors)->with_input('except', array('password'));
+			return Redirect::to('admin/accounts/add')
+						 ->with('errors', $errors)
+				   ->with_input('except', array('password'));
 		}
 
 		Notification::success('Successfully created account');
@@ -68,7 +80,8 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('admin/accounts/index');
 		}
 
-		$this->layout->content = View::make('admin.accounts.edit')->with('account', $account);
+		$this->layout->content = View::make('admin.accounts.edit')
+									 ->with('account', $account);
 	}
 
 	public function put_edit($id = 0)
@@ -82,7 +95,9 @@ class Admin_Accounts_Controller extends Controller {
 		$errors = $account->validate_and_update();
 		if(count($errors->all()) > 0)
 		{
-			return Redirect::to('admin/accounts/edit')->with('errors', $errors)->with_input('except', array('password'));
+			return Redirect::to('admin/accounts/edit')
+						 ->with('errors', $errors)
+				   ->with_input('except', array('password'));
 		}
 
 		Notification::success('Successfully updated account');
