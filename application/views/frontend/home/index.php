@@ -4,21 +4,21 @@
 			<h1>Welcome to ShopHub</h1>
 			<hr class="soften">
 			<div class="row">
-				<div class="span8">
-					<p>
-						In a world with the technologies we have available to us today, opening your own
-						webshop schould not be hard. Surprisingly it is, to make money, you need money. Not with ShopHub!
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo in.
-					</p>
-				</div>
-				<div class="span4">
-					<div class="pull-right">
-						<a class="btn btn-huge primary">Open Your Webshop Now</a><br>
-						<br>
-						<h2>Free. Easy. Secure.</h2>
-						<small>No Invenary needed!</small>
+				<div class="span12">
+					<div style="background: #fff; padding: 15px; -moz-border-radius: 5px;">
+						<div class="pull-right offset1 center-align">
+							<a class="btn btn-huge primary">Open Your Webshop Now</a><br>
+							<br>
+							<h2>Free. Easy. Secure.</h2>
+							<small>No Invenary needed!</small>
+						</div>
+						<p>
+							In a world with the technologies we have available to us today, opening your own
+							webshop schould not be hard. Surprisingly it is, to make money, you need money. Not with ShopHub!
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo in.
+						</p>
 					</div>
 				</div>
 			</div>

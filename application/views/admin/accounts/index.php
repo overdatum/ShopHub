@@ -6,6 +6,7 @@
 		</div>
 		<h1>Accounts</h1>
 	</div>
+	<?php Notification::show() ?>
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -19,6 +20,13 @@
 		<?php foreach($accounts as $account): ?>
 			<tr>
 				<td>
+				<?php
+				var_dump($account->roles);
+					/*foreach($account->roles as $role)
+					{
+						var_dump($role);
+					}*/
+				?>
 					<h2><?= $account->name ?></h2>
 				</td>
 				<td>
@@ -26,11 +34,11 @@
 				</td>
 				<td>
 					<?php
-					foreach($account->roles as $role)
+					/*foreach($account->roles as $role)
 					{
 						echo '
 							<b>'.$role->lang()->name.'</b><br>';
-					}
+					}*/
 					?>
 				</td>
 				<td width="120" style="text-align:right">
