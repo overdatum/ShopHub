@@ -1,8 +1,10 @@
 <div id="main">
 	<div class="page-header">
 		<div class="pull-right">
-			<input type="text" name="search"> &nbsp;
-			<a href="" class="btn primary"><i class="icon search"></i></a>
+			<?= Form::open('admin/accounts', 'GET') ?>
+				<input type="text" name="q"> &nbsp;
+				<button type="submit" class="btn primary"><i class="icon search"></i></button>
+			<?= Form::close() ?>
 		</div>
 		<h1>Accounts</h1>
 	</div>
@@ -42,7 +44,9 @@
 		<?php endforeach ?>
 		</tbody>
 	</table>
-	<?= $accounts->links() ?>
+	<div class="pull-left">
+		<?= $accounts->links() ?>
+	</div>
 	<div class="pull-right">
 		<?= HTML::link('admin/accounts/add', 'Add account', array('class' => 'btn large primary')) ?>
 	</div>

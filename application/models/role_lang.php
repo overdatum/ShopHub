@@ -1,4 +1,4 @@
 <?php
-class Role_Lang extends Eloquent\Model {
+class Role_lang extends Eloquent\Model {
 
 }

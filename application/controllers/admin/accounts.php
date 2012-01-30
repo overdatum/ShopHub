@@ -39,8 +39,16 @@ class Admin_Accounts_Controller extends Controller {
 			$roles_lang[$role_lang->id] = $role_lang;
 		}
 
+		$accounts = Account::with('roles');
+		if(Input::has('q'))
+		{
+			foreach(array('name', 'email') as $column)
+			{
+				$accounts->query->where($column, '~*', Input::get('q'));
+			}
+		}
 		$this->layout->content = View::make('admin.accounts.index')
-									 ->with('accounts', Account::with('roles')->paginate(2))
+									 ->with('accounts', $accounts->query->paginate(10))
 									 ->with('roles_lang', $roles_lang);
 	}
 

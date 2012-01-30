@@ -173,7 +173,7 @@ class Paginator {
 		//
 		// If there are not enough pages to make the creation of a slider possible
 		// based on the adjacent pages, we will simply display all of the pages.
-		// Otherwise, we will create a "truncating" slider which displays a 
+		// Otherwise, we will create a "truncating" slider which displays a
 		// nice window of pages based on the current page.
 		if ($this->last < 7 + ($adjacent * 2))
 		{

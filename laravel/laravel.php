@@ -5,6 +5,7 @@
  * the configuration class, and the class auto-loader. Once this file
  * has run, the framework is essentially ready for use.
  */
+
 require 'core.php';
 
 /**

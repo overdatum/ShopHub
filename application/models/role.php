@@ -1,9 +1,9 @@
 <?php
 class Role extends Eloquent\Model {
 
-	public function __construct()
+	public function role_lang()
 	{
-		//var_dump(func_get_args());
+		$this->has_one('Role_lang');
 	}
 
 	public function accounts()

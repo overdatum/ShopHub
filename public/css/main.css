@@ -86,3 +86,7 @@ h1, h2 {
 .page-header {
 	border-bottom: 1px solid #DDDDDD;
 	margin: 0 0 18px 0; }
+
+.pagination {
+	margin: 0;
+}
