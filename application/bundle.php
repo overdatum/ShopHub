@@ -37,5 +37,5 @@ Autoloader::psr(array(
 */
 
 Autoloader::map(array(
-	//'Role' => path('app').'models/role.php',
+	'Role_lang' => path('app').'models/role_lang.php',
 ));

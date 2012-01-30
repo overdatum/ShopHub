@@ -5,7 +5,6 @@ class Account extends Eloquent\Model {
 	public static $per_page = 3;
 	public $rules = array(
 		'email' => 'required|email',
-		'password' => 'required',
 		'name' => 'required',
 	);
 
@@ -59,6 +58,7 @@ class Account extends Eloquent\Model {
 
 	public function validate_and_insert()
 	{
+		$this->rules['password'] = 'required';
 		$validator = new Validator(Input::all(), $this->rules);
 
 		if ($validator->valid())
@@ -66,8 +66,16 @@ class Account extends Eloquent\Model {
 			$this->email = Input::get('email');
 			$this->password = Hash::make(Input::get('password'));
 			$this->name = Input::get('name');
-
 			$this->save();
+
+			if(Input::has('role_ids'))
+			{
+				foreach(Input::get('role_ids') as $role_id)
+				{
+					DB::table('accounts_roles')
+						->insert(array('account_id' => $this->id, 'role_id' => $role_id));
+				}
+			}
 		}
 
 		return $validator->errors;
@@ -76,13 +84,32 @@ class Account extends Eloquent\Model {
 	public function validate_and_update()
 	{
 		$validator = new Validator(Input::all(), $this->rules);
-
 		if ($validator->valid())
 		{
+			$roles = DB::query("SELECT roles.id, EXISTS(SELECT 1 FROM accounts_roles WHERE role_id = roles.id AND account_id = ?) AS active FROM roles", array($this->id));
+			foreach($roles as $role)
+			{
+				if(Input::has('role_ids') && $role->active && ! in_array($role->id, Input::get('role_ids')))
+				{
+					echo 'delete';
+					DB::table('accounts_roles')
+						->where('role_id', '=', $role->id)
+						->where('account_id', '=', $this->id)
+						->delete();
+				}
+
+				if(Input::has('role_ids') && ! $role->active && in_array($role->id, Input::get('role_ids')))
+				{
+					echo 'insert';
+					var_dump(array('account_id' => '', 'role_id' => $role->id));
+					DB::table('accounts_roles')
+						->insert(array('account_id' => $this->id, 'role_id' => $role->id));
+				}
+			}
+
 			$this->email = Input::get('email');
 			if($password = Input::get('password')) $this->password = Hash::make($password);
 			$this->name = Input::get('name');
-
 			$this->save();
 		}
 

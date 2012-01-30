@@ -3,7 +3,7 @@ class Role extends Eloquent\Model {
 
 	public function role_lang()
 	{
-		$this->has_one('Role_lang');
+		return $this->has_many('Role_lang');
 	}
 
 	public function accounts()
@@ -11,7 +11,7 @@ class Role extends Eloquent\Model {
 		return $this->has_and_belongs_to_many('Account');
 	}
 
-	public function lang()
+/*	public function lang()
 	{
 		$lang = DB::table('role_lang')
 					->where_role_id($this->id)
@@ -19,6 +19,6 @@ class Role extends Eloquent\Model {
 					->first();
 
 		return $lang;
-	}
+	}*/
 
 }

@@ -117,7 +117,6 @@ class Table {
 	public function key($type, $columns, $name)
 	{
 		$parameters = array('name' => $name, 'columns' => (array) $columns);
-
 		return $this->command($type, $parameters);
 	}
 

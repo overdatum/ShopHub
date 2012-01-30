@@ -44,11 +44,11 @@ class Admin_Accounts_Controller extends Controller {
 		{
 			foreach(array('name', 'email') as $column)
 			{
-				$accounts->query->where($column, '~*', Input::get('q'));
+				$accounts->or_where($column, '~*', Input::get('q'));
 			}
 		}
 		$this->layout->content = View::make('admin.accounts.index')
-									 ->with('accounts', $accounts->query->paginate(10))
+									 ->with('accounts', $accounts->paginate(10))
 									 ->with('roles_lang', $roles_lang);
 	}
 
@@ -59,7 +59,14 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('admin/accounts/index');
 		}
 
-		$this->layout->content = View::make('admin.accounts.add');
+		$roles = array();
+		foreach(Role::all() as $role)
+		{
+			$roles[$role->id] = $role->role_lang()->name;
+		}
+
+		$this->layout->content = View::make('admin.accounts.add')
+									 ->with('roles', $roles);
 	}
 
 	public function post_add()
@@ -88,8 +95,21 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('admin/accounts/index');
 		}
 
+		$roles_lang = array();
+		foreach(DB::table('role_lang')->get() as $role_lang)
+		{
+			$roles_lang[$role_lang->id] = $role_lang;
+		}
+
+		$roles = array();
+		foreach(Role::all() as $role)
+		{
+			$roles[$role->id] = $roles_lang[$role->id]->name;
+		}
+
 		$this->layout->content = View::make('admin.accounts.edit')
-									 ->with('account', $account);
+									 ->with('account', $account)
+									 ->with('roles', $roles);
 	}
 
 	public function put_edit($id = 0)
