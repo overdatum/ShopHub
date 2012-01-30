@@ -59,10 +59,16 @@ class Admin_Accounts_Controller extends Controller {
 			return Redirect::to('admin/accounts/index');
 		}
 
+		$roles_lang = array();
+		foreach(DB::table('role_lang')->get() as $role_lang)
+		{
+			$roles_lang[$role_lang->id] = $role_lang;
+		}
+
 		$roles = array();
 		foreach(Role::all() as $role)
 		{
-			$roles[$role->id] = $role->role_lang()->name;
+			$roles[$role->id] = $roles_lang[$role->id]->name;
 		}
 
 		$this->layout->content = View::make('admin.accounts.add')
@@ -107,9 +113,16 @@ class Admin_Accounts_Controller extends Controller {
 			$roles[$role->id] = $roles_lang[$role->id]->name;
 		}
 
+		$active_roles = array();
+		foreach(DB::table('accounts_roles')->where_account_id($id)->get(array('role_id')) as $role)
+		{
+			$active_roles[] = $role->role_id;
+		}
+
 		$this->layout->content = View::make('admin.accounts.edit')
 									 ->with('account', $account)
-									 ->with('roles', $roles);
+									 ->with('roles', $roles)
+									 ->with('active_roles', $active_roles);
 	}
 
 	public function put_edit($id = 0)
