@@ -17,6 +17,7 @@ define('MB_STRING', (int) function_exists('mb_get_info'));
  * These are typically classes that the auto-loader relies upon to
  * load classes, such as the array and configuration classes.
  */
+require path('sys').'event'.EXT;
 require path('sys').'bundle'.EXT;
 require path('sys').'config'.EXT;
 require path('sys').'helpers'.EXT;
@@ -36,6 +37,13 @@ spl_autoload_register(array('Laravel\\Autoloader', 'load'));
  * free to remove aliases when they extend core classes.
  */
 Autoloader::$aliases = Config::get('application.aliases');
+
+/**
+ * Register the Laravel namespace so that the auto-loader loads it
+ * according to the PSR-0 naming conventions. This should provide
+ * fast resolution of all core classes.
+ */
+Autoloader::namespaces(array('Laravel' => path('sys')));
 
 /**
  * Register all of the bundles that are defined in the bundle info
