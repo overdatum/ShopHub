@@ -90,3 +90,7 @@ h1, h2 {
 .pagination {
 	margin: 0;
 }
+
+label, input, button, select, textarea {
+	font-family: inherit;
+}

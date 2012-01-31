@@ -150,19 +150,13 @@ class Admin_Accounts_Controller extends Controller {
 	{
 		$account = Account::find($id);
 
-		var_dump(Authority::can('delete', 'Account', $account));
-		die();
-
 		if( ! $account OR $id == 0 OR Authority::cannot('delete', 'Account', $account))
 		{
 			return Redirect::to('admin/accounts/index');
 		}
 
-		$this->layout->content = View::make('admin.accounts.delete');
-	}
-
-	public function get_delete_success() {
-		$this->layout->content = View::make('admin.accounts.delete_success');
+		$this->layout->content = View::make('admin.accounts.delete')
+									 ->with('account', $account);
 	}
 
 	public function put_delete($id = 0)
@@ -174,6 +168,9 @@ class Admin_Accounts_Controller extends Controller {
 		}
 
 		$account->delete();
-		return Redirect::to('admin/accounts/delete_success');
+
+		Notification::success('Successfully deleted account');
+
+		return Redirect::to('admin/accounts/index');
 	}
 }
