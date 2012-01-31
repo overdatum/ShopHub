@@ -22,7 +22,7 @@ return array(
 			Authority::allow('manage', 'Store', function($store) use ($account)
 			{
 				return DB::table('stores')->where_account_id($account->id)->first();
-			}); 
+			});
 		}
 
 		if($account::has_role('organisation'))
@@ -35,7 +35,7 @@ return array(
 
 		if($account::has_any_role('store_owner', 'manufacturer', 'reseller'))
 		{
-			// Store_owners, Manufacturers and Resellers can "manage" their account 
+			// Store_owners, Manufacturers and Resellers can "manage" their account
 			Authority::allow('moderate', 'Account', function ($that_account) use ($account)
 			{
 				return $that_account->id == $account->id;
@@ -44,7 +44,7 @@ return array(
 
 		if($account::has_role('superadmin'))
 		{
-			Authority::allow('manage', 'all'); 
+			Authority::allow('manage', 'all');
 			Authority::deny('delete', 'Account', function ($that_account) use ($account)
 			{
 				return $that_account->id == $account->id;
