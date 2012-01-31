@@ -39,7 +39,7 @@ class Admin_Accounts_Controller extends Controller {
 			$roles_lang[$role_lang->id] = $role_lang;
 		}
 
-		$accounts = Account::with('roles');
+		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));
 		if(Input::has('q'))
 		{
 			foreach(array('name', 'email') as $column)

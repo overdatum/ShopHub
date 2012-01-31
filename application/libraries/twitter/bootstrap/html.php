@@ -8,6 +8,7 @@
  * @see http://twitter.github.com/bootstrap/
  */
 use URL;
+use Input;
 class HTML extends \Laravel\HTML {
 
 	public static function menu($list, $attributes = array())
@@ -46,4 +47,10 @@ class HTML extends \Laravel\HTML {
 
 		return '<a href="'.$url.'"'.static::attributes($attributes).'>'.$title.'</a>';
 	}
+
+	public static function sort_link($url, $sort_by, $name)
+	{
+		return HTML::link($url.'?'.http_build_query(array_merge(Input::all(), array('sort_by' => $sort_by, 'order' => (Input::get('sort_by') == $sort_by ? (Input::get('order') == 'ASC' ? 'DESC' : 'ASC') : 'ASC')))), $name);
+	}
+
 }

@@ -13,8 +13,8 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Email</th>
+					<th><?= HTML::sort_link('admin/accounts', 'name', 'Name') ?></th>
+					<th><?= HTML::sort_link('admin/accounts', 'email', 'Email') ?></th>
 					<th>Roles</th>
 					<th>&nbsp;</th>
 				</tr>
