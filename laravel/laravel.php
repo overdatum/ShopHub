@@ -58,7 +58,7 @@ register_shutdown_function(function()
  */
 error_reporting(-1);
 
-ini_set('display_errors', 'Off');
+ini_set('display_errors', Config::get('error.display'));
 
 /**
  * Even though "Magic Quotes" are deprecated in PHP 5.3, they may
@@ -182,6 +182,19 @@ if (Config::get('session.driver') !== '')
 	Session::save();
 }
 
+/**
+ * Send all of the cookies to the browser. The cookies are
+ * stored in a "jar" until the end of a request, primarily
+ * to make testing the cookie functionality of the site
+ * much easier since the jar can be inspected.
+ */
+Cookie::send();	
+
+/**
+ * Send the final response to the browser and fire the
+ * final event indicating that the processing for the
+ * current request is completed.
+ */
 $response->send();
 
 Event::fire('laravel: done');
