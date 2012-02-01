@@ -7,7 +7,8 @@
  * @author   Taylor Otwell <taylorotwell@gmail.com>
  * @link     http://laravel.com
  */
-
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // --------------------------------------------------------------
 // Tick... Tock... Tick... Tock...
 // --------------------------------------------------------------

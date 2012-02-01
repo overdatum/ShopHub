@@ -41,5 +41,9 @@ return array(
 	'authority' => array(
 		'location' => 'authority',
 		'auto' => true
+	),
+	'pqp' => array(
+		'location' => 'pqp',
+		'auto' => true
 	)
 );

@@ -14,22 +14,42 @@
  is terminating.
 
 - - - - - - - - - - - - - - - - - - - - - */
-
+use DB;
+use Event;
+use Session;
 class PhpQuickProfiler {
-	
+
 	public $output = array();
 	public $config = '';
-	
+
 	public function __construct($startTime) {
 		$this->startTime = $startTime;
+
+		Event::listen('laravel: query', function($sql, $bindings, $time) {
+			$queryTotals = Session::has('PQPqueryTotals') ? Session::get('PQPqueryTotals') : array();
+			$queries = Session::has('PQPqueries') ? Session::get('PQPqueries') : array();
+
+			$queryTotals['time'] += $time;
+
+			$queries[] = array(
+				'time' => $time,
+				'sql' => $sql
+			);
+
+			$queryTotals['count']++;
+
+			Session::put('PQPqueryTotals', $queryTotals);
+			Session::put('PQPqueries', $queries);
+		});
+
 		$this->config = __DIR__.'/';
 		require __DIR__.'/Console.php';
 	}
-	
+
 	/*-------------------------------------------
 	     FORMAT THE DIFFERENT TYPES OF LOGS
 	-------------------------------------------*/
-	
+
 	public function gatherConsoleData() {
 		$logs = Console::getLogs();
 		if($logs['console']) {
@@ -47,11 +67,11 @@ class PhpQuickProfiler {
 		}
 		$this->output['logs'] = $logs;
 	}
-	
+
 	/*-------------------------------------------
 	    AGGREGATE DATA ON THE FILES INCLUDED
 	-------------------------------------------*/
-	
+
 	public function gatherFileData() {
 		$files = get_included_files();
 		$fileList = array();
@@ -70,87 +90,71 @@ class PhpQuickProfiler {
 			$fileTotals['size'] += $size;
 			if($size > $fileTotals['largest']) $fileTotals['largest'] = $size;
 		}
-		
+
 		$fileTotals['size'] = $this->getReadableFileSize($fileTotals['size']);
 		$fileTotals['largest'] = $this->getReadableFileSize($fileTotals['largest']);
 		$this->output['files'] = $fileList;
 		$this->output['fileTotals'] = $fileTotals;
 	}
-	
+
 	/*-------------------------------------------
 	     MEMORY USAGE AND MEMORY AVAILABLE
 	-------------------------------------------*/
-	
+
 	public function gatherMemoryData() {
 		$memoryTotals = array();
 		$memoryTotals['used'] = $this->getReadableFileSize(memory_get_peak_usage());
 		$memoryTotals['total'] = ini_get("memory_limit");
 		$this->output['memoryTotals'] = $memoryTotals;
 	}
-	
+
 	/*--------------------------------------------------------
 	     QUERY DATA -- DATABASE OBJECT WITH LOGGING REQUIRED
 	----------------------------------------------------------*/
-	
+
 	public function gatherQueryData() {
-		$queryTotals = array();
-		$queryTotals['count'] = 0;
-		$queryTotals['time'] = 0;
-		$queries = array();
-		
-		if($this->db != '') {
-			$queryTotals['count'] += $this->db->queryCount;
-			foreach($this->db->queries as $key => $query) {
-				$query = $this->attemptToExplainQuery($query);
-				$queryTotals['time'] += $query['time'];
-				$query['time'] = $this->getReadableTime($query['time']);
-				$queries[] = $query;
-			}
-		}
-		
-		$queryTotals['time'] = $this->getReadableTime($queryTotals['time']);
-		$this->output['queries'] = $queries;
-		$this->output['queryTotals'] = $queryTotals;
+		$this->output['queryTotals'] = Session::has('PQPqueryTotals') ? Session::get('PQPqueryTotals') : array();
+		$this->output['queries'] = Session::has('PQPqueries') ? Session::get('PQPqueries') : array();
 	}
-	
+
 	/*--------------------------------------------------------
 	     CALL SQL EXPLAIN ON THE QUERY TO FIND MORE INFO
 	----------------------------------------------------------*/
-	
+
 	function attemptToExplainQuery($query) {
 		try {
 			$sql = 'EXPLAIN '.$query['sql'];
-			$rs = $this->db->query($sql);
+			$rs = DB::query($sql);
 		}
 		catch(Exception $e) {}
 		if($rs) {
-			$row = mysql_fetch_array($rs, MYSQL_ASSOC);
+			$rs->get();
 			$query['explain'] = $row;
 		}
 		return $query;
 	}
-	
+
 	/*-------------------------------------------
 	     SPEED DATA FOR ENTIRE PAGE LOAD
 	-------------------------------------------*/
-	
+
 	public function gatherSpeedData() {
 		$speedTotals = array();
 		$speedTotals['total'] = $this->getReadableTime(($this->getMicroTime() - $this->startTime)*1000);
 		$speedTotals['allowed'] = ini_get("max_execution_time");
 		$this->output['speedTotals'] = $speedTotals;
 	}
-	
+
 	/*-------------------------------------------
 	     HELPER FUNCTIONS TO FORMAT DATA
 	-------------------------------------------*/
-	
+
 	public static function getMicroTime() {
 		$time = microtime();
 		$time = explode(' ', $time);
 		return $time[1] + $time[0];
 	}
-	
+
 	public function getReadableFileSize($size, $retstring = null) {
         	// adapted from code at http://aidanlister.com/repos/v/function.size_readable.php
 	       $sizes = array('bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
@@ -166,7 +170,7 @@ class PhpQuickProfiler {
 	       if ($sizestring == $sizes[0]) { $retstring = '%01d %s'; } // Bytes aren't normally fractional
 	       return sprintf($retstring, $size, $sizestring);
 	}
-	
+
 	public function getReadableTime($time) {
 		$ret = $time;
 		$formatter = 0;
@@ -182,11 +186,11 @@ class PhpQuickProfiler {
 		$ret = number_format($ret,3,'.','') . ' ' . $formats[$formatter];
 		return $ret;
 	}
-	
+
 	/*---------------------------------------------------------
 	     DISPLAY TO THE SCREEN -- CALL WHEN CODE TERMINATING
 	-----------------------------------------------------------*/
-	
+
 	public function display($db = '', $master_db = '') {
 		$this->db = $db;
 		$this->master_db = $master_db;
@@ -195,11 +199,10 @@ class PhpQuickProfiler {
 		$this->gatherMemoryData();
 		$this->gatherQueryData();
 		$this->gatherSpeedData();
-		
+
 		require_once($this->config.'../display.php');
 		return getPqp($this->output, $this->config);
 	}
-	
-}
 
+}
 ?>

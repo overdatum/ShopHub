@@ -1,6 +1,6 @@
 <?php
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
  Title : Sample Landing page for PHP Quick Profiler Class
  Author : Created by Ryan Campbell
@@ -19,10 +19,10 @@ require __DIR__.'/src/classes/PhpQuickProfiler.php';
 //require_once('classes/MySqlDatabase.php');
 
 class PQP {
-	
+
 	private $profiler;
 	private $db = '';
-	
+
 	public function __construct()
 	{
 		$this->profiler = new PQP\PhpQuickProfiler(PQP\PhpQuickProfiler::getMicroTime());
@@ -30,11 +30,10 @@ class PQP {
 
 	public static function init() {
 		self::sampleConsoleData();
-		self::sampleDatabaseData();
 		self::sampleMemoryLeak();
 		self::sampleSpeedComparison();
 	}
-	
+
 	public static function sampleConsoleData() {
 		try {
 			PQP\Console::log('Begin logging data');
@@ -50,36 +49,35 @@ class PQP {
 			PQP\Console::logError($e, 'Sample error logging.');
 		}
 	}
-	
+
 	public static function sampleDatabaseData() {
-		DB::table('accounts')->find(1);
 		/*$this->db = new MySqlDatabase(
-			'your DB host', 
+			'your DB host',
 			'your DB user',
 			'your DB password');
 		$this->db->connect(true);
 		$this->db->changeDatabase('your db name');
-		
+
 		$sql = 'SELECT PostId FROM Posts WHERE PostId > 2';
 		$rs = $this->db->query($sql);
-		
+
 		$sql = 'SELECT COUNT(PostId) FROM Posts';
 		$rs = $this->db->query($sql);
-		
+
 		$sql = 'SELECT COUNT(PostId) FROM Posts WHERE PostId != 1';
 		$rs = $this->db->query($sql);*/
 	}
-		
+
 	public static function sampleMemoryLeak() {
 		$ret = '';
-		$longString = 'This is a really long string that when appended with the . symbol 
+		$longString = 'This is a really long string that when appended with the . symbol
 					  will cause memory to be duplicated in order to create the new string.';
 		for($i = 0; $i < 10; $i++) {
 			$ret = $ret . $longString;
 			PQP\Console::logMemory($ret, 'Watch memory leak -- iteration '.$i);
 		}
 	}
-		
+
 	public static function sampleSpeedComparison() {
 		PQP\Console::logSpeed('Time taken to get to line '.__LINE__);
 		PQP\Console::logSpeed('Time taken to get to line '.__LINE__);
@@ -88,7 +86,7 @@ class PQP {
 		PQP\Console::logSpeed('Time taken to get to line '.__LINE__);
 		PQP\Console::logSpeed('Time taken to get to line '.__LINE__);
 	}
-	
+
 	public function __destruct() {
 		$pqp = $this->profiler->display($this->db);
 
@@ -108,5 +106,5 @@ class PQP {
 		}
 
 	}
-	
+
 }

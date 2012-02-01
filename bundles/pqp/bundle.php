@@ -1,4 +1,4 @@
 <?php
 Laravel\Autoloader::map(array(
-	'PQP' => BUNDLE_PATH.'pqp/pqp'.EXT,
+	'PQP' => path('bundle').'pqp/pqp'.EXT,
 ));
