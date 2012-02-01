@@ -2,7 +2,7 @@
 class Account extends Eloquent\Model {
 
 	public static $timestamps = true;
-	public static $per_page = 3;
+
 	public $rules = array(
 		'email' => 'required|email',
 		'name' => 'required',

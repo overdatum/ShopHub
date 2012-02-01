@@ -5,7 +5,7 @@
 			<hr class="soften">
 			<div class="row">
 				<div class="span12">
-					<div style="background: #fff; padding: 15px; -moz-border-radius: 5px;">
+					<div class="well">
 						<div class="pull-right offset1 center-align">
 							<a class="btn btn-huge primary">Open Your Webshop Now</a><br>
 							<br>

@@ -5,17 +5,11 @@
 				<a href="#">ShopHub</a>
 			</h3>
 
-			<!--
-			<form action="" class="pull-left">
-				<input type="text" placeholder="Search">
-			</form>
-			-->
-
 			<?= HTML::menu($menu) ?>
 
 			<div class="btn-group pull-right">
-				<a class="btn no-click" href="#">Change language</a>
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					<b>English</b> / Change language &nbsp;
 				<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu pull-right">
