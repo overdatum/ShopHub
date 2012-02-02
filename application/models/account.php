@@ -91,7 +91,6 @@ class Account extends Eloquent\Model {
 			{
 				if(Input::has('role_ids') && $role->active && ! in_array($role->id, Input::get('role_ids')))
 				{
-					echo 'delete';
 					DB::table('accounts_roles')
 						->where('role_id', '=', $role->id)
 						->where('account_id', '=', $this->id)
@@ -100,8 +99,6 @@ class Account extends Eloquent\Model {
 
 				if(Input::has('role_ids') && ! $role->active && in_array($role->id, Input::get('role_ids')))
 				{
-					echo 'insert';
-					var_dump(array('account_id' => '', 'role_id' => $role->id));
 					DB::table('accounts_roles')
 						->insert(array('account_id' => $this->id, 'role_id' => $role->id));
 				}
