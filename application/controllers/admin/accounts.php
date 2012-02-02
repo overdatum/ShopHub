@@ -6,8 +6,6 @@ class Admin_Accounts_Controller extends Controller {
 
 	public function __construct()
 	{
-		$pqp = new PQP;
-		$pqp->init();
 		$this->filter('before', 'auth|is_admin');
 	}
 

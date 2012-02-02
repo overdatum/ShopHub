@@ -42,8 +42,7 @@ return array(
 		'location' => 'authority',
 		'auto' => true
 	),
-	'pqp' => array(
-		'location' => 'pqp',
+	'bug-lost' => array(
 		'auto' => true
 	)
 );

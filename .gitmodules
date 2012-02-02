@@ -1,0 +1,3 @@
+[submodule "bundles/bug-lost"]
+	path = bundles/bug-lost
+	url = git@github.com:taylorotwell/laravel-bug-lost.git
