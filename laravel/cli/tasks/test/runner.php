@@ -2,6 +2,7 @@
 
 use Laravel\File;
 use Laravel\Bundle;
+use Laravel\Request;
 use Laravel\CLI\Tasks\Task;
 
 class Runner extends Task {
@@ -11,9 +12,11 @@ class Runner extends Task {
 	 *
 	 * @return void
 	 */
-	public function run()
+	public function run($bundles = array())
 	{
-		$this->bundle(array(DEFAULT_BUNDLE));
+		if (count($bundles) == 0) $bundles = array(DEFAULT_BUNDLE);
+
+		$this->bundle($bundles);
 	}
 
 	/**
@@ -41,7 +44,7 @@ class Runner extends Task {
 	/**
 	 * Run the tests for a given bundle.
 	 *
-	 * @param  array  $arguments
+	 * @param  array  $bundles
 	 * @return void
 	 */
 	public function bundle($bundles = array())
@@ -76,9 +79,11 @@ class Runner extends Task {
 		// We'll simply fire off PHPUnit with the configuration switch
 		// pointing to our temporary configuration file. This allows
 		// us to flexibly run tests for any setup.
-		passthru('phpunit -c '.path('base').'phpunit.xml');
+		$path = path('base').'phpunit.xml';
 
-		@unlink(path('base').'phpunit.xml');
+		passthru('phpunit --configuration '.$path);
+
+		@unlink($path);
 	}
 
 	/**
@@ -89,11 +94,45 @@ class Runner extends Task {
 	 */
 	protected function stub($directory)
 	{
-		$stub = File::get(path('sys').'cli/tasks/test/stub.xml');
+		$path = path('sys').'cli/tasks/test/';
 
-		$stub = str_replace('{{directory}}', $directory, $stub);
+		$stub = File::get($path.'stub.xml');
+
+		// The PHPUnit bootstrap file contains several items that are swapped
+		// at test time. This allows us to point PHPUnit at a few different
+		// locations depending on what the developer wants to test.
+		foreach (array('bootstrap', 'directory') as $item)
+		{
+			$stub = $this->{"swap_{$item}"}($stub, $path, $directory);
+		}
 
 		File::put(path('base').'phpunit.xml', $stub);
+	}
+
+	/**
+	 * Swap the bootstrap file in the stub.
+	 *
+	 * @param  string  $stub
+	 * @param  string  $path
+	 * @param  string  $directory
+	 * @return string
+	 */
+	protected function swap_bootstrap($stub, $path, $directory)
+	{
+		return str_replace('{{bootstrap}}', $path.'phpunit.php', $stub);
+	}
+
+	/**
+	 * Swap the directory in the stub.
+	 *
+	 * @param  string  $stub
+	 * @param  string  $path
+	 * @param  string  $directory
+	 * @return string
+	 */
+	protected function swap_directory($stub, $path, $directory)
+	{
+		return str_replace('{{directory}}', $directory, $stub);
 	}
 
 }

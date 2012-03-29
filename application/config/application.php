@@ -8,7 +8,7 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| The URL used to access your application without a trailing slash. The URL
-	| does nto have to be set. If it isn't we'll try our best to guess the URL
+	| does not have to be set. If it isn't we'll try our best to guess the URL
 	| of your application.
 	|
 	*/
@@ -21,7 +21,6 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| If you are including the "index.php" in your URLs, you can ignore this.
-	|
 	| However, if you are using mod_rewrite to get cleaner URLs, just set
 	| this option to an empty string and we'll take care of the rest.
 	|
@@ -38,6 +37,10 @@ return array(
 	| encrypted strings and hashes. It is extremely important that this key
 	| remain secret and should not be shared with anyone. Make it about 32
 	| characters of random gibberish.
+	|
+	| The "auto_key" option tells Laravel to automatically set this key value
+	| if one has not already been set. This is generally done on the first
+	| request to the Laravel splash screen.
 	|
 	*/
 
@@ -73,13 +76,13 @@ return array(
 	| SSL Link Generation
 	|--------------------------------------------------------------------------
 	|
-	| Many sites use SSL to protect their users data. However, you may not
-	| always be able to use SSL on your development machine, meaning all HTTPS
-	| will be broken during development.
+	| Many sites use SSL to protect their users data. However, you may not be
+	| able to use SSL on your development machine, meaning all HTTPS will be
+	| broken during development.
 	|
 	| For this reason, you may wish to disable the generation of HTTPS links
-	| throughout your application. This option does just that. All attempts to
-	| generate HTTPS links will generate regular HTTP links instead.
+	| throughout your application. This option does just that. All attempts
+	| to generate HTTPS links will generate regular HTTP links instead.
 	|
 	*/
 
@@ -90,7 +93,7 @@ return array(
 	| Application Timezone
 	|--------------------------------------------------------------------------
 	|
-	| The default timezone of your application. This timezone will be used when
+	| The default timezone of your application. The timezone will be used when
 	| Laravel needs a date, such as when writing to a log file or travelling
 	| to a distant star at warp speed.
 	|
@@ -104,13 +107,11 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| Here, you can specify any class aliases that you would like registered
-	| when Laravel loads. Aliases are lazy-loaded, so add as many as you want.
+	| when Laravel loads. Aliases are lazy-loaded, so feel free to add!
 	|
 	| Aliases make it more convenient to use namespaced classes. Instead of
 	| referring to the class using its full namespace, you may simply use
 	| the alias defined here.
-	|
-	| We have already aliased common Laravel classes to make your life easier.
 	|
 	*/
 
@@ -118,6 +119,7 @@ return array(
 		'Auth'       => 'Laravel\\Auth',
 		'Asset'      => 'Laravel\\Asset',
 		'Autoloader' => 'Laravel\\Autoloader',
+		'Blade'      => 'Laravel\\Blade',
 		'Bundle'     => 'Laravel\\Bundle',
 		'Cache'      => 'Laravel\\Cache',
 		'Config'     => 'Laravel\\Config',
@@ -125,6 +127,7 @@ return array(
 		'Cookie'     => 'Laravel\\Cookie',
 		'Crypter'    => 'Laravel\\Crypter',
 		'DB'         => 'Laravel\\Database',
+		'Eloquent'   => 'Laravel\\Database\\Eloquent\\Model',
 		'Event'      => 'Laravel\\Event',
 		'File'       => 'Laravel\\File',
 		'Filter'     => 'Laravel\\Routing\\Filter',
@@ -145,6 +148,7 @@ return array(
 		'Redis'      => 'Laravel\\Redis',
 		'Request'    => 'Laravel\\Request',
 		'Response'   => 'Laravel\\Response',
+		'Route'      => 'Laravel\\Routing\\Route',
 		'Router'     => 'Laravel\\Routing\\Router',
 		'Schema'     => 'Laravel\\Database\\Schema',
 		'Section'    => 'Laravel\\Section',

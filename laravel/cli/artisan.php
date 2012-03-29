@@ -11,31 +11,13 @@ use Laravel\Config;
 Bundle::start(DEFAULT_BUNDLE);
 
 /**
- * Set the CLI options on the $_SERVER global array so we can easily
- * retrieve them from the various parts of the CLI code. We can use
- * the Request class to access them conveniently.
- */
-list($arguments, $_SERVER['cli']) = Console::options($_SERVER['argv']);
-
-/**
- * The Laravel environment may be specified on the CLI using the "env"
- * option, allowing the developer to easily use local configuration
- * files from the CLI since the environment is usually controlled
- * by server environmenet variables.
- */
-if (isset($_SERVER['cli']['env']))
-{
-	$_SERVER['LARAVEL_ENV'] = $_SERVER['cli']['env'];
-}
-
-/**
  * The default database connection may be set by specifying a value
  * for the "database" CLI option. This allows migrations to be run
  * conveniently for a test or staging database.
  */
-if (isset($_SERVER['cli']['db']))
+if (isset($_SERVER['CLI']['DB']))
 {
-	Config::set('database.default', $_SERVER['cli']['db']);
+	Config::set('database.default', $_SERVER['CLI']['DB']);
 }
 
 /**

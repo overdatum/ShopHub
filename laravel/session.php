@@ -5,7 +5,7 @@ class Session {
 	/**
 	 * The session singleton instance for the request.
 	 *
-	 * @var Payload
+	 * @var Session\Payload
 	 */
 	public static $instance;
 
@@ -17,7 +17,19 @@ class Session {
 	const csrf_token = 'csrf_token';
 
 	/**
-	 * Create the session payload instance and load the session for the request.
+	 * Create the session payload and the load the session.
+	 *
+	 * @return void
+	 */
+	public static function load()
+	{
+		static::start(Config::get('session.driver'));
+
+		static::$instance->load(Cookie::get(Config::get('session.cookie')));
+	}
+
+	/**
+	 * Create the session payload instance for the request.
 	 *
 	 * @param  string  $driver
 	 * @return void
@@ -31,7 +43,7 @@ class Session {
 	 * Create a new session driver instance.
 	 *
 	 * @param  string  $driver
-	 * @return Driver
+	 * @return Session\Drivers\Driver
 	 */
 	public static function factory($driver)
 	{
@@ -52,6 +64,9 @@ class Session {
 			case 'memcached':
 				return new Session\Drivers\Memcached(Cache::driver('memcached'));
 
+			case 'memory':
+				return new Session\Drivers\Memory;
+
 			case 'redis':
 				return new Session\Drivers\Redis(Cache::driver('redis'));
 
@@ -71,7 +86,7 @@ class Session {
 	 *		Session::instance()->put('name', 'Taylor');
 	 * </code>
 	 *
-	 * @return Payload
+	 * @return Session\Payload
 	 */
 	public static function instance()
 	{

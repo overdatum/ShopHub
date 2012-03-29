@@ -16,9 +16,9 @@ class Postgres extends Grammar {
 	{
 		$columns = implode(', ', $this->columns($table));
 
-		// First we will generate the base table creation statement. Other than
-		// auto-incrementing keys, no indexes will be created during the first
-		// creation of the table. They will be added in separate commands.
+		// First we will generate the base table creation statement. Other than auto
+		// incrementing keys, no indexes will be created during the first creation
+		// of the table as they're added in separate commands.
 		$sql = 'CREATE TABLE '.$this->wrap($table).' ('.$columns.')';
 
 		return $sql;
@@ -35,9 +35,9 @@ class Postgres extends Grammar {
 	{
 		$columns = $this->columns($table);
 
-		// Once we the array of column definitions, we'll add "add column"
-		// to the front of each definition, then we'll concatenate the
-		// definitions using commas like normal and generate the SQL.
+		// Once we the array of column definitions, we need to add "add" to the
+		// front of each definition, then we'll concatenate the definitions
+		// using commas like normal and generate the SQL.
 		$columns = implode(', ', array_map(function($column)
 		{
 			return 'ADD COLUMN '.$column;
@@ -114,10 +114,9 @@ class Postgres extends Grammar {
 	 */
 	protected function incrementer(Table $table, Fluent $column)
 	{
-		// We don't actually need to specify an "auto_increment" keyword since
-		// we handle the auto-increment definition in the type definition for
-		// integers by changing the type to "serial", which is a convenient
-		// notational short-cut provided by Postgres.
+		// We don't actually need to specify an "auto_increment" keyword since we
+		// handle the auto-increment definition in the type definition for
+		// integers by changing the type to "serial".
 		if ($column->type == 'integer' and $column->increment)
 		{
 			return ' PRIMARY KEY';
@@ -147,7 +146,11 @@ class Postgres extends Grammar {
 	 */
 	public function unique(Table $table, Fluent $command)
 	{
-		return $this->key($table, $command, true);
+		$table = $this->wrap($table);
+
+		$columns = $this->columnize($command->columns);
+
+		return "ALTER TABLE $table ADD CONSTRAINT ".$command->name." UNIQUE ($columns)";
 	}
 
 	/**
@@ -218,9 +221,9 @@ class Postgres extends Grammar {
 	{
 		$columns = array_map(array($this, 'wrap'), $command->columns);
 
-		// Once we the array of column names, we need to add "drop" to the
-		// front of each column, then we'll concatenate the columns using
-		// commas and generate the alter statement SQL.
+		// Once we the array of column names, we need to add "drop" to the front
+		// of each column, then we'll concatenate the columns using commas and
+		// generate the alter statement SQL.
 		$columns = implode(', ', array_map(function($column)
 		{
 			return 'DROP COLUMN '.$column;
@@ -251,7 +254,7 @@ class Postgres extends Grammar {
 	 */
 	public function drop_unique(Table $table, Fluent $command)
 	{
-		return $this->drop_key($table, $command);
+		return $this->drop_constraint($table, $command);
 	}
 
 	/**
@@ -291,6 +294,18 @@ class Postgres extends Grammar {
 	}
 
 	/**
+	 * Drop a foreign key constraint from the table.
+	 *
+	 * @param  Table   $table
+	 * @param  Fluent  $fluent
+	 * @return string
+	 */
+	public function drop_foreign(Table $table, Fluent $command)
+	{
+		return $this->drop_constraint($table, $command);		
+	}
+
+	/**
 	 * Generate the data-type definition for a string.
 	 *
 	 * @param  Fluent  $column
@@ -321,6 +336,17 @@ class Postgres extends Grammar {
 	protected function type_float(Fluent $column)
 	{
 		return 'REAL';
+	}
+
+	/**
+	 * Generate the data-type definintion for a decimal.
+	 *
+	 * @param  Fluent  $column
+	 * @return string
+	 */
+	protected function type_decimal(Fluent $column)
+	{
+		return "DECIMAL({$column->precision}, {$column->scale})";
 	}
 
 	/**

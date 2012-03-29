@@ -3,7 +3,7 @@
  * Laravel - A PHP Framework For Web Artisans
  *
  * @package  Laravel
- * @version  3.0.0
+ * @version  3.1.1
  * @author   Taylor Otwell <taylorotwell@gmail.com>
  * @link     http://laravel.com
  */
@@ -65,20 +65,34 @@ foreach ($paths as $name => $path)
 {
 	if ($web) $path = "../{$path}";
 
-	$GLOBALS['laravel_paths'][$name] = realpath($path).DS;
+	if ( ! isset($GLOBALS['laravel_paths'][$name]))
+	{
+		$GLOBALS['laravel_paths'][$name] = realpath($path).DS;
+	}
 }
 
-// --------------------------------------------------------------
-// Define a global path helper function.
-// --------------------------------------------------------------
+/**
+ * A global path helper function.
+ * 
+ * <code>
+ *     $storage = path('storage');
+ * </code>
+ * 
+ * @param  string  $path
+ * @return string
+ */
 function path($path)
 {
 	return $GLOBALS['laravel_paths'][$path];
 }
 
-// --------------------------------------------------------------
-// Define a global path setter function.
-// --------------------------------------------------------------
+/**
+ * A global path setter function.
+ * 
+ * @param  string  $path
+ * @param  string  $value
+ * @return void
+ */
 function set_path($path, $value)
 {
 	$GLOBALS['laravel_paths'][$path] = $value;

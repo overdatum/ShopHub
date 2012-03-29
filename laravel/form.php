@@ -7,7 +7,26 @@ class Form {
 	 *
 	 * @var array
 	 */
-	protected static $labels = array();
+	public static $labels = array();
+	
+	/**
+	 * The registered custom macros.
+	 *
+	 * @var array
+	 */
+	public static $macros = array();
+
+    /**
+     * Registers a custom macro.
+     *
+     * @param  string   $name
+     * @param  Closure  $input
+     * @return void
+     */
+	public static function macro($name, $macro)
+	{
+		static::$macros[$name] = $macro;
+	}
 
 	/**
 	 * Open a HTML form.
@@ -52,14 +71,13 @@ class Form {
 
 		// Since PUT and DELETE methods are not actually supported by HTML forms,
 		// we'll create a hidden input element that contains the request method
-		// and set the actual request method to POST. Laravel will look for the
-		// hidden element to determine the request method.
+		// and set the actual request method variable to POST.
 		if ($method == 'PUT' or $method == 'DELETE')
 		{
 			$append = static::hidden(Request::spoofer, $method);
 		}
 
-		return '<form'.HTML::attributes($attributes).'>'.$append.PHP_EOL;
+		return '<form'.HTML::attributes($attributes).'>'.$append;
 	}
 
 	/**
@@ -172,7 +190,7 @@ class Form {
 
 		$value = HTML::entities($value);
 
-		return '<label for="'.$name.'"'.$attributes.'>'.$value.'</label>'.PHP_EOL;
+		return '<label for="'.$name.'"'.$attributes.'>'.$value.'</label>';
 	}
 
 	/**
@@ -186,6 +204,7 @@ class Form {
 	 *		echo Form::input('text', 'email', 'example@gmail.com');
 	 * </code>
 	 *
+	 * @param  string  $type
 	 * @param  string  $name
 	 * @param  mixed   $value
 	 * @param  array   $attributes
@@ -199,7 +218,7 @@ class Form {
 
 		$attributes = array_merge($attributes, compact('type', 'name', 'value', 'id'));
 
-		return '<input'.HTML::attributes($attributes).'>'.PHP_EOL;
+		return '<input'.HTML::attributes($attributes).'>';
 	}
 
 	/**
@@ -348,7 +367,7 @@ class Form {
 
 		if ( ! isset($attributes['cols'])) $attributes['cols'] = 50;
 
-		return '<textarea'.HTML::attributes($attributes).'>'.HTML::entities($value).'</textarea>'.PHP_EOL;
+		return '<textarea'.HTML::attributes($attributes).'>'.HTML::entities($value).'</textarea>';
 	}
 
 	/**
@@ -381,7 +400,7 @@ class Form {
 			$html[] = static::option($value, $display, $selected);
 		}
 
-		return '<select'.HTML::attributes($attributes).'>'.implode('', $html).'</select>'.PHP_EOL;
+		return '<select'.HTML::attributes($attributes).'>'.implode('', $html).'</select>';
 	}
 
 	/**
@@ -389,7 +408,7 @@ class Form {
 	 *
 	 * @param  string  $value
 	 * @param  string  $display
-	 * @return string  $selected
+	 * @param  string  $selected
 	 * @return string
 	 */
 	protected static function option($value, $display, $selected)
@@ -506,6 +525,7 @@ class Form {
 	 * </code>
 	 *
 	 * @param  string  $url
+	 * @param  string  $name
 	 * @param  array   $attributes
 	 * @return string
 	 */
@@ -519,14 +539,13 @@ class Form {
 	/**
 	 * Create a HTML button element.
 	 *
-	 * @param  string  $name
 	 * @param  string  $value
 	 * @param  array   $attributes
 	 * @return string
 	 */
 	public static function button($value, $attributes = array())
 	{
-		return '<button'.HTML::attributes($attributes).'>'.HTML::entities($value).'</button>'.PHP_EOL;
+		return '<button'.HTML::attributes($attributes).'>'.HTML::entities($value).'</button>';
 	}
 
 	/**
@@ -540,8 +559,7 @@ class Form {
 	{
 		// If an ID has been explicitly specified in the attributes, we will
 		// use that ID. Otherwise, we will look for an ID in the array of
-		// label names as this makes it convenient to give input elements
-		// the same ID as their corresponding labels.
+		// label names so labels and their elements have the same ID.
 		if (array_key_exists('id', $attributes))
 		{
 			return $attributes['id'];
@@ -551,6 +569,23 @@ class Form {
 		{
 			return $name;
 		}
+	}
+
+	/**
+	 * Dynamically handle calls to custom macros.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public static function __callStatic($method, $parameters)
+	{
+	    if (isset(static::$macros[$method]))
+	    {
+	        return call_user_func_array(static::$macros[$method], $parameters);
+	    }
+	    
+	    throw new \Exception("Method [$method] does not exist.");
 	}
 
 }

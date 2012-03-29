@@ -4,6 +4,34 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Database Query Logging
+	|--------------------------------------------------------------------------
+	|
+	| By default, the SQL, bindings, and execution time are logged in an array
+	| for you to review. They can be retrieved via the DB::profile() method.
+	| However, in some situations, you may want to disable logging for
+	| ultra high-volume database work. You can do so here.
+	|
+	*/
+
+	'profile' => true,
+
+	/*
+	|--------------------------------------------------------------------------
+	| PDO Fetch Style
+	|--------------------------------------------------------------------------
+	|
+	| By default, database results will be returned as instances of the PHP
+	| stdClass object; however, you may wish to retrieve records as arrays
+	| instead of objects. Here you can control the PDO fetch style of the
+	| database queries run by your application.
+	|
+	*/
+
+	'fetch' => PDO::FETCH_CLASS,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Default Database Connection
 	|--------------------------------------------------------------------------
 	|
@@ -28,8 +56,6 @@ return array(
 	| All database work in Laravel is done through the PHP's PDO facilities,
 	| so make sure you have the PDO drivers for your particlar database of
 	| choice installed on your machine.
-	|
-	| Drivers: 'mysql', 'pgsql', 'sqlsrv', 'sqlite'.
 	|
 	*/
 
@@ -87,7 +113,11 @@ return array(
 
 	'redis' => array(
 
-		'default' => array('host' => '127.0.0.1', 'port' => 6379),
+		'default' => array(
+			'host'     => '127.0.0.1',
+			'port'     => 6379,
+			'database' => 0
+		),
 
 	),
 

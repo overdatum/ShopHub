@@ -3,10 +3,12 @@
 use Laravel\IoC;
 use Laravel\Str;
 use Laravel\View;
+use Laravel\Event;
 use Laravel\Bundle;
 use Laravel\Request;
 use Laravel\Redirect;
 use Laravel\Response;
+use FilesystemIterator as fIterator;
 
 abstract class Controller {
 
@@ -16,6 +18,13 @@ abstract class Controller {
 	 * @var string
 	 */
 	public $layout;
+
+	/**
+	 * The bundle the controller belongs to.
+	 *
+	 * @var string
+	 */
+	public $bundle;
 
 	/**
 	 * Indicates if the controller uses RESTful routing.
@@ -32,13 +41,87 @@ abstract class Controller {
 	protected $filters = array();
 
 	/**
+	 * The event name for the Laravel controller factory.
+	 *
+	 * @var string
+	 */
+	const factory = 'laravel.controller.factory';
+
+	/**
+	 * Create a new Controller instance.
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		// If the controller has specified a layout to be used when rendering
+		// views, we will instantiate the layout instance and set it to the
+		// layout property, replacing the string layout name.
+		if ( ! is_null($this->layout))
+		{
+			$this->layout = $this->layout();
+		}
+	}
+
+	/**
+	 * Detect all of the controllers for a given bundle.
+	 *
+	 * @param  string  $bundle
+	 * @param  string  $directory
+	 * @return array
+	 */
+	public static function detect($bundle = DEFAULT_BUNDLE, $directory = null)
+	{
+		if (is_null($directory))
+		{
+			$directory = Bundle::path($bundle).'controllers';
+		}
+
+		// First we'll get the root path to the directory housing all of
+		// the bundle's controllers. This will be used later to figure
+		// out the identifiers needed for the found controllers.
+		$root = Bundle::path($bundle).'controllers'.DS;
+
+		$controllers = array();
+
+		$items = new fIterator($directory, fIterator::SKIP_DOTS);
+
+		foreach ($items as $item)
+		{
+			// If the item is a directory, we will recurse back into the function
+			// to detect all of the nested controllers and we will keep adding
+			// them into the array of controllers for the bundle.
+			if ($item->isDir())
+			{
+				$nested = static::detect($bundle, $item->getRealPath());
+
+				$controllers = array_merge($controllers, $nested);
+			}
+
+			// If the item is a file, we'll assume it is a controller and we
+			// will build the identifier string for the controller that we
+			// can pass into the route's controller method.
+			else
+			{
+				$controller = str_replace(array($root, EXT), '', $item->getRealPath());
+
+				$controller = str_replace(DS, '.', $controller);
+
+				$controllers[] = Bundle::identifier($bundle, $controller);
+			}
+		}
+
+		return $controllers;
+	}
+
+	/**
 	 * Call an action method on a controller.
 	 *
 	 * <code>
 	 *		// Call the "show" method on the "user" controller
 	 *		$response = Controller::call('user@show');
 	 *
-	 *		// Call the "profile" method on the "user/admin" controller and pass parameters
+	 *		// Call the "user/admin" controller and pass parameters
 	 *		$response = Controller::call('user.admin@profile', array($username));
 	 * </code>
 	 *
@@ -48,48 +131,52 @@ abstract class Controller {
 	 */
 	public static function call($destination, $parameters = array())
 	{
+		static::references($destination, $parameters);
+
 		list($bundle, $destination) = Bundle::parse($destination);
 
 		// We will always start the bundle, just in case the developer is pointing
 		// a route to another bundle. This allows us to lazy load the bundle and
-		// improve performance since the bundle is not loaded on every request.
+		// improve speed since the bundle is not loaded on every request.
 		Bundle::start($bundle);
 
 		list($controller, $method) = explode('@', $destination);
-
-		list($method, $parameters) = static::backreference($method, $parameters);
 
 		$controller = static::resolve($bundle, $controller);
 
 		// If the controller could not be resolved, we're out of options and
 		// will return the 404 error response. If we found the controller,
 		// we can execute the requested method on the instance.
-		if (is_null($controller)) return Response::error('404');
+		if (is_null($controller))
+		{
+			return Event::first('404');
+		}
 
 		return $controller->execute($method, $parameters);
 	}
 
 	/**
-	 * Replace all back-references on the given method.
+	 * Replace all back-references on the given destination.
 	 *
-	 * @param  string  $method
+	 * @param  string  $destination
 	 * @param  array   $parameters
 	 * @return array
 	 */
-	protected static function backreference($method, $parameters)
+	protected static function references(&$destination, &$parameters)
 	{
 		// Controller delegates may use back-references to the action parameters,
-		// which allows the developer to setup more flexible rouets to their
-		// controllers with less code. We will replace the back-references
-		// with their corresponding parameter value.
+		// which allows the developer to setup more flexible routes to various
+		// controllers with much less code than would be usual.
 		foreach ($parameters as $key => $value)
 		{
-			$method = str_replace('(:'.($key + 1).')', $value, $method, $count);
+			$search = '(:'.($key + 1).')';
+
+			$destination = str_replace($search, $value, $destination, $count);
 
 			if ($count > 0) unset($parameters[$key]);
 		}
 
-		return array(str_replace('(:1)', 'index', $method), $parameters);
+		return array($destination, $parameters);
 	}
 
 	/**
@@ -103,10 +190,12 @@ abstract class Controller {
 	{
 		if ( ! static::load($bundle, $controller)) return;
 
+		$identifier = Bundle::identifier($bundle, $controller);
+
 		// If the controller is registered in the IoC container, we will resolve
 		// it out of the container. Using constructor injection on controllers
-		// via the container allows more flexible and testable applications.
-		$resolver = 'controller: '.Bundle::identifier($bundle, $controller);
+		// via the container allows more flexible applications.
+		$resolver = 'controller: '.$identifier;
 
 		if (IoC::registered($resolver))
 		{
@@ -115,17 +204,17 @@ abstract class Controller {
 
 		$controller = static::format($bundle, $controller);
 
-		$controller = new $controller;
-
-		// If the controller has specified a layout to be used when rendering
-		// views, we will instantiate the layout instance and set it to the
-		// layout property, replacing the string layout name.
-		if ( ! is_null($controller->layout))
+		// If we couldn't resolve the controller out of the IoC container we'll
+		// format the controller name into its proper class name and load it
+		// by convention out of the bundle's controller directory.
+		if (Event::listeners(static::factory))
 		{
-			$controller->layout = $controller->layout();
+			return Event::first(static::factory, $controller);
 		}
-
-		return $controller;
+		else
+		{
+			return new $controller;
+		}
 	}
 
 	/**
@@ -158,13 +247,7 @@ abstract class Controller {
 	 */
 	protected static function format($bundle, $controller)
 	{
-		// If the controller's bundle is not the application bundle, we will
-		// prepend the bundle to the identifier so the bundle is prefixed to
-		// the class name when it is formatted. Bundle controllers are
-		// always prefixed with the bundle name.
-		if ($bundle !== DEFAULT_BUNDLE) $controller = $bundle.'.'.$controller;
-
-		return Str::classify($controller).'_Controller';
+		return Bundle::class_prefix($bundle).Str::classify($controller).'_Controller';
 	}
 
 	/**
@@ -176,11 +259,12 @@ abstract class Controller {
 	 */
 	public function execute($method, $parameters = array())
 	{
+		$filters = $this->filters('before', $method);
+
 		// Again, as was the case with route closures, if the controller "before"
 		// filters return a response, it will be considered the response to the
-		// request and the controller method will not be used to handle the
-		// request to the application.
-		$response = Filter::run($this->filters('before', $method), array(), true);
+		// request and the controller method will not be used.
+		$response = Filter::run($filters, array(), true);
 
 		if (is_null($response))
 		{
@@ -193,7 +277,7 @@ abstract class Controller {
 
 		// The "after" function on the controller is simply a convenient hook
 		// so the developer can work on the response before it's returned to
-		// the browser. This is useful for setting partials on the layout.
+		// the browser. This is useful for templating, etc.
 		$this->after($response);
 
 		Filter::run($this->filters('after', $method), array($response));
@@ -328,7 +412,7 @@ abstract class Controller {
 	 * Dynamically resolve items from the application IoC container.
 	 *
 	 * <code>
-	 *		// Retrieve an object registered in the container as "mailer"
+	 *		// Retrieve an object registered in the container
 	 *		$mailer = $this->mailer;
 	 *
 	 *		// Equivalent call using the IoC container instance
@@ -337,9 +421,10 @@ abstract class Controller {
 	 */
 	public function __get($key)
 	{
-		if (IoC::registered($key)) return IoC::resolve($key);
-
-		throw new \Exception("Accessing undefined property [$key] on controller.");
+		if (IoC::registered($key))
+		{
+			return IoC::resolve($key);
+		}
 	}
 
 }

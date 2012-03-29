@@ -1,13 +1,11 @@
-<?php namespace Laravel;
-
-use Closure;
+<?php namespace Laravel; use Closure;
 
 class Request {
 
 	/**
-	 * The route handling the current request.
+	 * All of the route instances handling the request.
 	 *
-	 * @var Routing\Route
+	 * @var array
 	 */
 	public static $route;
 
@@ -35,6 +33,11 @@ class Request {
 	 */
 	public static function method()
 	{
+		if ($_SERVER['REQUEST_METHOD'] == 'HEAD')
+		{
+			return 'GET';
+		}
+
 		return (static::spoofed()) ? $_POST[Request::spoofer] : $_SERVER['REQUEST_METHOD'];
 	}
 
@@ -129,6 +132,16 @@ class Request {
 	}
 
 	/**
+	 * Get the HTTP referrer for the request.
+	 *
+	 * @return string
+	 */
+	public static function referrer()
+	{
+		return array_get($_SERVER, 'HTTP_REFERER');
+	}
+
+	/**
 	 * Determine if the current request is via the command line.
 	 *
 	 * @return bool
@@ -139,7 +152,28 @@ class Request {
 	}
 
 	/**
-	 * Get the route handling the current request.
+	 * Get the Laravel environment for the current request.
+	 *
+	 * @return string|null
+	 */
+	public static function env()
+	{
+		if (isset($_SERVER['LARAVEL_ENV'])) return $_SERVER['LARAVEL_ENV'];
+	}
+
+	/**
+	 * Determine the current request environment.
+	 *
+	 * @param  string  $env
+	 * @return bool
+	 */
+	public static function is_env($env)
+	{
+		return static::env() === $env;
+	}
+
+	/**
+	 * Get the main route handling the request.
 	 *
 	 * @return Route
 	 */

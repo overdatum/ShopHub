@@ -79,7 +79,7 @@ class Table {
 	 * @param  string        $name
 	 * @return Fluent
 	 */
-	public function unique($columns, $name)
+	public function unique($columns, $name = null)
 	{
 		return $this->key(__FUNCTION__, $columns, $name);
 	}
@@ -91,7 +91,7 @@ class Table {
 	 * @param  string        $name
 	 * @return Fluent
 	 */
-	public function fulltext($columns, $name)
+	public function fulltext($columns, $name = null)
 	{
 		return $this->key(__FUNCTION__, $columns, $name);
 	}
@@ -99,9 +99,22 @@ class Table {
 	/**
 	 * Create a new index on the table.
 	 *
-	 * @param  string|array
+	 * @param  string|array  $columns
+	 * @param  string        $name
+	 * @return Fluent
 	 */
-	public function index($columns, $name)
+	public function index($columns, $name = null)
+	{
+		return $this->key(__FUNCTION__, $columns, $name);
+	}
+
+	/**
+	 * Add a foreign key constraint to the table.
+	 *
+	 * @param  string|array  $columns
+	 * @param  string        $name
+	 */
+	public function foreign($columns, $name = null)
 	{
 		return $this->key(__FUNCTION__, $columns, $name);
 	}
@@ -116,8 +129,17 @@ class Table {
 	 */
 	public function key($type, $columns, $name)
 	{
-		$parameters = array('name' => $name, 'columns' => (array) $columns);
-		return $this->command($type, $parameters);
+		$columns = (array) $columns;
+
+		// If no index name was specified, we will concatenate the columns and
+		// append the index type to the name to generate a unique name for
+		// the index that can be used when dropping indexes.
+		if (is_null($name))
+		{
+			$name = $this->name.'_'.implode('_', $columns).'_'.$type;
+		}
+
+		return $this->command($type, compact('name', 'columns'));
 	}
 
 	/**
@@ -186,6 +208,17 @@ class Table {
 	}
 
 	/**
+	 * Drop a foreign key constraint from the table.
+	 *
+	 * @param  string  $name
+	 * @return void
+	 */
+	public function drop_foreign($name)
+	{
+		return $this->drop_key(__FUNCTION__, $name);
+	}
+
+	/**
 	 * Create a command to drop any type of index.
 	 *
 	 * @param  string  $type
@@ -194,7 +227,7 @@ class Table {
 	 */
 	protected function drop_key($type, $name)
 	{
-		return $this->command($type, array('name' => $name));
+		return $this->command($type, compact('name'));
 	}
 
 	/**
@@ -236,12 +269,24 @@ class Table {
 	 * Add a float column to the table.
 	 *
 	 * @param  string  $name
-	 * @param  bool    $increment
 	 * @return Fluent
 	 */
 	public function float($name)
 	{
 		return $this->column(__FUNCTION__, compact('name'));
+	}
+
+	/**
+	 * Add a decimal column to the table.
+	 *
+	 * @param  string  $name
+	 * @param  int     $precision
+	 * @param  int     $scale
+	 * @return Fluent
+	 */
+	public function decimal($name, $precision, $scale)
+	{
+		return $this->column(__FUNCTION__, compact('name', 'precision', 'scale'));
 	}
 
 	/**

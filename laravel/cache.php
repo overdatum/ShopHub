@@ -23,7 +23,7 @@ class Cache {
 	 * </code>
 	 *
 	 * @param  string        $driver
-	 * @return Cache\Driver
+	 * @return Cache\Drivers\Driver
 	 */
 	public static function driver($driver = null)
 	{
@@ -41,7 +41,7 @@ class Cache {
 	 * Create a new cache driver instance.
 	 *
 	 * @param  string  $driver
-	 * @return Driver
+	 * @return Cache\Drivers\Driver
 	 */
 	protected static function factory($driver)
 	{
@@ -55,6 +55,9 @@ class Cache {
 
 			case 'memcached':
 				return new Cache\Drivers\Memcached(Memcached::connection(), Config::get('cache.key'));
+
+			case 'memory':
+				return new Cache\Drivers\Memory;
 
 			case 'redis':
 				return new Cache\Drivers\Redis(Redis::db());

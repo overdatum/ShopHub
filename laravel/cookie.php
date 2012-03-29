@@ -31,29 +31,42 @@ class Cookie {
 	{
 		if (headers_sent()) return false;
 
-		// All cookies are stored in the "jar" when set and not sent
-		// directly to the browser. This simply makes testing all of
-		// the cookie functionality easier since the cooke jar can
-		// be inspected by the developer in tests.
+		// All cookies are stored in the "jar" when set and not sent directly to
+		// the browser. This simply makes testing all of the cookie stuff very
+		// easy since the jar can be inspected by tests.
 		foreach (static::$jar as $cookie)
 		{
-			extract($cookie);
+			static::set($cookie);
+		}
+	}
 
-			$time = ($minutes !== 0) ? time() + ($minutes * 60) : 0;
+	/**
+	 * Send a cookie from the cookie jar back to the browser.
+	 *
+	 * @param  array  $cookie
+	 * @return void
+	 */
+	protected static function set($cookie)
+	{
+		extract($cookie);
 
-			// A cookie payload can't exceed 4096 bytes, so if the
-			// payload is greater than that, we'll raise an error
-			// to warn the developer.
-			$value = static::sign($name, $value);
+		$time = ($minutes !== 0) ? time() + ($minutes * 60) : 0;
 
-			if (strlen($value) > 4000)
-			{
-				throw new \Exception("Payload too large for cookie.");
-			}
+		$value = static::sign($name, $value);
 
+		// A cookie payload can't exceed 4096 bytes, so if the cookie payload
+		// is greater than that, we'll raise an error to warn the developer
+		// since it could cause cookie session problems.
+		if (strlen($value) > 4000)
+		{
+			throw new \Exception("Payload too large for cookie.");
+		}
+		else
+		{
 			setcookie($name, $value, $time, $path, $domain, $secure);
 		}
 	}
+
 
 	/**
 	 * Get the value of a cookie.
@@ -79,14 +92,13 @@ class Cookie {
 		if ( ! is_null($value) and isset($value[40]) and $value[40] == '~')
 		{
 			// The hash signature and the cookie value are separated by a tilde
-			// character for convenience. To separate the hash and the contents
+			// character for convenience. To separate the hash and the payload
 			// we can simply expode on that character.
-			//
-			// By re-feeding the cookie value into the "sign" method we should
-			// be able to generate a hash that matches the one taken from the
-			// cookie. If they don't, the cookie value has been changed.
 			list($hash, $value) = explode('~', $value, 2);
 
+			// By re-feeding the cookie value into the "hash" method we should
+			// be able to generate a hash that matches the one taken from the
+			// cookie. If they don't, we return null.
 			if (static::hash($name, $value) === $hash)
 			{
 				return $value;
@@ -113,7 +125,7 @@ class Cookie {
 	 * @param  string  $path
 	 * @param  string  $domain
 	 * @param  bool    $secure
-	 * @return bool
+	 * @return void
 	 */
 	public static function put($name, $value, $minutes = 0, $path = '/', $domain = null, $secure = false)
 	{

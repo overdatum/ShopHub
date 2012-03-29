@@ -181,14 +181,14 @@ class Response {
 		if (is_null($name)) $name = basename($path);
 
 		$headers = array_merge(array(
-			'Content-Description'       => 'File Transfer',
-			'Content-Type'              => File::mime(File::extension($path)),
-			'Content-Disposition'       => 'attachment; filename="'.$name.'"',
-			'Content-Transfer-Encoding' => 'binary',
-			'Expires'                   => 0,
-			'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
-			'Pragma'                    => 'public',
-			'Content-Length'            => File::size($path),
+			'content-description'       => 'File Transfer',
+			'content-type'              => File::mime(File::extension($path)),
+			'content-disposition'       => 'attachment; filename="'.$name.'"',
+			'content-transfer-encoding' => 'binary',
+			'expires'                   => 0,
+			'cache-control'             => 'must-revalidate, post-check=0, pre-check=0',
+			'pragma'                    => 'public',
+			'content-length'            => File::size($path),
 		), $headers);
 
 		return new static(File::get($path), 200, $headers);
@@ -205,7 +205,10 @@ class Response {
 	 */
 	public static function prepare($response)
 	{
-		if ( ! $response instanceof Response) $response = new static($response);
+		if ( ! $response instanceof Response)
+		{
+			$response = new static($response);
+		}
 
 		// We'll need to force the response to be a string before closing the session,
 		// since the developer may be using the session within a view, and we can't
@@ -276,16 +279,16 @@ class Response {
 		// If the content type was not set by the developer, we will set the
 		// header to a default value that indicates to the browser that the
 		// response is HTML and that it uses the default encoding.
-		if ( ! isset($this->headers['Content-Type']))
+		if ( ! isset($this->headers['content-type']))
 		{
 			$encoding = Config::get('application.encoding');
 
-			$this->header('Content-Type', 'text/html; charset='.$encoding);
+			$this->header('content-type', 'text/html; charset='.$encoding);
 		}
 
 		// Once the framework controlled headers have been sentm, we can
 		// simply iterate over the developer's headers and send each one
-		// to the browser. Headers with the same name will be overriden.
+		// back to the browser for the response.
 		foreach ($this->headers as $name => $value)
 		{
 			header("{$name}: {$value}", true);
@@ -311,7 +314,7 @@ class Response {
 	 */
 	public function header($name, $value)
 	{
-		$this->headers[$name] = $value;
+		$this->headers[strtolower($name)] = $value;
 		return $this;
 	}
 
