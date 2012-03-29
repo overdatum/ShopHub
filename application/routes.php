@@ -87,7 +87,7 @@ Filter::register('can', function($action, $resource) {
 
 // Routes
 Router::register('GET /', 'frontend.home@index');
-Router::register(array('GET /home/(:any?)', 'PUT /home/(:any?)', 'DELETE /home/(:any?)', 'POST /home/(:any?)'), 'frontend.home@(:1)');
+Router::register(array('GET /home/(:any?)', 'PUT /home/(:any?)', 'DELETE /home/(:any?)', 'POST /home/(:any?)'), 'frontend.home@(:1)', array('a', 'b', 'c'));
 Router::register(array('GET /account/(:any?)', 'PUT /account/(:any?)', 'DELETE /account/(:any?)', 'POST /account/(:any?)'), 'frontend.account@(:1)');
 Router::register('GET /admin', 'admin.dashboard@index');
 

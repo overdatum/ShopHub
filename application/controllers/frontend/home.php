@@ -23,6 +23,7 @@ class Frontend_Home_Controller extends Controller {
 
 	public function get_index()
 	{
+		var_dump(func_get_args()); echo 'welcome home'; die;
 		$this->layout->content = View::make('frontend.home.index');
 	}
 

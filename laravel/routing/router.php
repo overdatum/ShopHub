@@ -51,10 +51,12 @@ class Router {
 	 * @param  string        $action
 	 * @return void
 	 */
-	public static function register($route, $action)
+	public static function register($route, $action, $extra_arguments = array())
 	{
 		foreach ((array) $route as $uri)
 		{
+			static::$routes[$uri]['extra_arguments'] = $arguments;
+
 			// If the action is a string, it is a pointer to a controller, so we
 			// need to add it to the action array as a "uses" clause, which will
 			// indicate to the route to call the controller when the route is
