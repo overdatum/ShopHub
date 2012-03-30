@@ -4,4 +4,4 @@ Route::controller(array(
 	'account::backend.accounts',
 	'account::auth',
 	'account::profile'
-), '(:controller)/(:wildcards)', 'index');
+), 'this/is/cool/(:any)/(:controller)/(:wildcards)', 'index');
