@@ -1,5 +1,5 @@
 <?php
-class Account extends Eloquent\Model {
+class Account extends Eloquent {
 
 	public static $timestamps = true;
 
@@ -10,7 +10,7 @@ class Account extends Eloquent\Model {
 
 	public function roles()
 	{
-		return $this->has_and_belongs_to_many('Role');
+		return $this->has_many_and_belongs_to('Role', 'accounts_roles');
 	}
 
 	/**
@@ -19,11 +19,11 @@ class Account extends Eloquent\Model {
 	 * @param	string	$key	the role key
 	 * @return	boolean
 	 */
-	public static function has_role($key)
+	public function has_role($key)
 	{
 		foreach(Auth::user()->roles as $role)
 		{
-			if($role->key == $key)
+			if($role->attributes['key'] == $key)
 			{
 				return true;
 			}
@@ -38,7 +38,7 @@ class Account extends Eloquent\Model {
 	 * @param	array	$keys	the role keys
 	 * @return	boolean
 	 */
-	public static function has_any_role($keys)
+	public function has_any_role($keys)
 	{
 		if( ! is_array($keys))
 		{
@@ -47,7 +47,7 @@ class Account extends Eloquent\Model {
 
 		foreach(Auth::user()->roles as $role)
 		{
-			if(in_array($role->key, $keys))
+			if(in_array($role->attributes['key'], $keys))
 			{
 				return true;
 			}

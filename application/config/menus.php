@@ -1,11 +1,11 @@
 <?php
 return array(
 	'admin' => array(
-		'admin/dashboard' => array(
+		'backend/dashboard' => array(
 			'name' => 'Dashboard'
 		),
-		'admin/accounts' => array(
-			'name' => 'Accounts',
+		'backend/accounts' => array(
+			'name' => 'Accounts'
 		)
 	),
 	'frontend' => array(
@@ -15,10 +15,10 @@ return array(
 	),
 	'logged_in' => array(
 		'frontend' => array(
-			'account/profile' => array(
+			'profile' => array(
 				'name' => 'Profile'
 			),
-			'account/logout' => array(
+			'auth/logout' => array(
 				'name' => 'Uitloggen'
 			)
 		),
@@ -28,7 +28,7 @@ return array(
 			'signup' => array(
 				'name' => '<b>Sign up</b>'
 			),
-			'account/login' => array(
+			'auth/login' => array(
 				'name' => '<b>Login</b>'
 			)
 		)

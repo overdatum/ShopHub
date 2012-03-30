@@ -1,38 +1,29 @@
 <?php
+class Home_Controller extends Controller {
 
-class Home_Controller extends Base_Controller {
+	public $restful = true;
+	public $layout = true;
 
-	/*
-	|--------------------------------------------------------------------------
-	| The Default Controller
-	|--------------------------------------------------------------------------
-	|
-	| Instead of using RESTful routes and anonymous functions, you might wish
-	| to use controllers to organize your application API. You'll love them.
-	|
-	| This controller responds to URIs beginning with "home", and it also
-	| serves as the default controller for the application, meaning it
-	| handles requests to the root of the application.
-	|
-	| You can respond to GET requests to "/home/profile" like so:
-	|
-	|		public function action_profile()
-	|		{
-	|			return "This is your profile!";
-	|		}
-	|
-	| Any extra segments are passed to the method as parameters:
-	|
-	|		public function action_profile($id)
-	|		{
-	|			return "This is the profile for user {$id}.";
-	|		}
-	|
-	*/
-
-	public function action_index()
+	public function layout()
 	{
-		return View::make('home.index');
+		$extra = Auth::check() ? Config::get('menus.logged_in.frontend') : Config::get('menus.logged_out.frontend');
+
+		$menu_data = array(
+			'menu' => array_merge(Config::get('menus.frontend'), $extra)
+		);
+
+		$header_data = array(
+			'title' => 'Home'
+		);
+
+		$this->layout = View::make('layouts.default')->with('header_data', $header_data)->with('menu_data', $menu_data);
+
+		return $this->layout;
+	}
+
+	public function get_index()
+	{
+		$this->layout->content = View::make('frontend.home.index');
 	}
 
 }

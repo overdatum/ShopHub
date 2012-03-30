@@ -1,24 +1,24 @@
 <?php
-class Role extends Eloquent\Model {
+class Role extends Eloquent {
 
-	public function role_lang()
+	public $includes;
+
+	public function __construct()
 	{
-		return $this->has_many('Role_lang');
+		$this->includes = array('lang' => function($query)
+		{
+			$query->where_language_id(1);
+		});
 	}
 
 	public function accounts()
 	{
-		return $this->has_and_belongs_to_many('Account');
+		return $this->has_many_and_belongs_to('Account');
 	}
 
-/*	public function lang()
+	public function lang()
 	{
-		$lang = DB::table('role_lang')
-					->where_role_id($this->id)
-					->where_language_id(Auth::user()->language_id)
-					->first();
-
-		return $lang;
-	}*/
+		return $this->has_one('RoleLang');
+	}
 
 }

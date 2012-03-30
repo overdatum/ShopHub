@@ -1,38 +1,4 @@
 <?php
-
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Simply tell Laravel the HTTP verbs and URIs it should respond to. It is a
-| breeze to setup your applications using Laravel's RESTful routing, and it
-| is perfectly suited for building both large applications and simple APIs.
-| Enjoy the fresh air and simplicity of the framework.
-|
-| Let's respond to a simple GET request to http://example.com/hello:
-|
-|		Route::get('hello', function()
-|		{
-|			return 'Hello World!';
-|		});
-|
-| You can even respond to more than one URI:
-|
-|		Route::post('hello, world', function()
-|		{
-|			return 'Hello World!';
-|		});
-|
-| It's easy to allow URI wildcards using (:num) or (:any):
-|
-|		Route::put('hello/(:any)', function($name)
-|		{
-|			return "Welcome, $name.";
-|		});
-|
-*/
-
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
@@ -99,30 +65,4 @@ Route::filter('after', function($response)
 Route::filter('csrf', function()
 {
 	if (Request::forged()) return Response::error('500');
-});
-
-Route::filter('auth', function()
-{
-	if (Auth::guest()) return Redirect::to('account/login');
-});
-
-Filter::register('can', function($action, $resource) {
-	if ( ! Authority::can($action, $resource)) return Redirect::to('home');
-});
-
-// Routes
-Router::register('GET /', 'frontend.home@index');
-Router::register(array('GET /home/(:any?)', 'PUT /home/(:any?)', 'DELETE /home/(:any?)', 'POST /home/(:any?)'), 'frontend.home@(:1)', array('a', 'b', 'c'));
-Router::register(array('GET /account/(:any?)', 'PUT /account/(:any?)', 'DELETE /account/(:any?)', 'POST /account/(:any?)'), 'frontend.account@(:1)');
-Router::register('GET /admin', 'admin.dashboard@index');
-
-View::composer('layouts.default', function($view)
-{
-	Asset::container('header')->add('jquery', 'js/jquery.min.js');
-	Asset::container('header')->add('bootstrap', 'bootstrap/bootstrap.css');
-	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-buttons.js', 'jquery');
-	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-dropdown.js', 'jquery');
-	Asset::container('header')->add('main', 'css/main.css');
-
-	$view->footer = View::make('partials.footer');
 });

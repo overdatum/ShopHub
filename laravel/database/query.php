@@ -275,7 +275,7 @@ class Query {
 	 */
 	public function or_where_id($value)
 	{
-		return $this->or_where('id', '=', $value);
+		return $this->or_where('id', '=', $value);		
 	}
 
 	/**

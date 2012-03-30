@@ -1,5 +1,5 @@
 <?php
-class Store extends Eloquent\Model {
+class Store extends Eloquent {
 
 	public static $timestamps = true;
 

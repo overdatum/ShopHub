@@ -32,7 +32,7 @@ class Notification {
 			echo '<div class="alert-messages">';
 			foreach($notifications as $notification) {
 				echo '<div class="alert alert-'.$notification['type'].'">';
-					if($notification['close']) echo '<a class="close">×</a>';
+					if(isset($notification['close']) && $notification['close'] == true) echo '<a class="close">×</a>';
 					echo $notification['message'];
 				echo '</div>';
 			}

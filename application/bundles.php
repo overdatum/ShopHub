@@ -34,15 +34,8 @@
 */
 
 return array(
-	'eloquent' => array(
-		'location' => 'eloquent',
-		'auto' => true
-	),
-	'authority' => array(
-		'location' => 'authority',
-		'auto' => true
-	),
-	'bug-lost' => array(
-		'auto' => true
+	'shophub' => array(
+		'auto' => true,
+		'location' => 'shophub/application'
 	)
 );
