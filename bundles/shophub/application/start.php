@@ -16,6 +16,13 @@ Bundle::register('anbu', array(
 
 Bundle::start('anbu');
 
+Bundle::register('menu', array(
+	'auto' => true,
+	'location' => 'thirdparty/menu'
+));
+
+Bundle::start('menu');
+
 
 $bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles', FilesystemIterator::SKIP_DOTS);
 
