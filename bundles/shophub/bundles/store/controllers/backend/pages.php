@@ -1,5 +1,5 @@
 <?php
-class Admin_Stores_Controller extends Controller {
+class Store_Backend_Pages_Controller extends Controller {
 
 	public $restful = true;
 	public $layout = true;
