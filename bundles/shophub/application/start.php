@@ -1,5 +1,7 @@
 <?php
 
+// Bootstrapping ShopHub
+
 Bundle::register('authority', array(
 	'auto' => true,
 	'location' => 'thirdparty/authority'
