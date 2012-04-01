@@ -1,2 +1,4 @@
 favicon.*
 .DS_Store
+logs
+bundles

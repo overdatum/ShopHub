@@ -5,7 +5,7 @@
 				<a href="#">ShopHub</a>
 			</h3>
 
-			<?= HTML::menu($menu) ?>
+			<?= Menu::container('admin')->render(array('class' => 'nav')); ?>
 
 			<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">

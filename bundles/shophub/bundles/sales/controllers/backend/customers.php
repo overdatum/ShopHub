@@ -1,31 +1,18 @@
 <?php
-class Admin_Accounts_Controller extends Controller {
+
+class Sales_Backend_Customers_Controller extends Shophub_Base_Controller {
 
 	public $restful = true;
+	
 	public $layout = true;
+
+	public $meta_title = 'Customers';
 
 	public function __construct()
 	{
 		parent::__construct();
 
 		$this->filter('before', 'auth|is_admin');
-	}
-
-	public function layout()
-	{
-		$menu_data = array(
-			'menu' => Config::get('menus.admin')
-		);
-
-		$header_data = array(
-			'title' => 'Admin | Accounts'
-		);
-
-		$this->layout = View::make('layouts.default')
-							->with('header_data', $header_data)
-							->with('menu_data', $menu_data);
-
-		return $this->layout;
 	}
 
 	public function get_index()

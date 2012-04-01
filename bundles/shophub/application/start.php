@@ -6,23 +6,39 @@ Bundle::register('authority', array(
 	'auto' => true,
 	'location' => 'thirdparty/authority'
 ));
-
 Bundle::start('authority');
 
 Bundle::register('anbu', array(
 	'auto' => true,
 	'location' => 'thirdparty/anbu'
 ));
-
 Bundle::start('anbu');
 
 Bundle::register('menu', array(
 	'auto' => true,
 	'location' => 'thirdparty/menu'
 ));
-
 Bundle::start('menu');
 
+Bundle::register('eventsourcing', array(
+	'auto' => true,
+	'location' => 'thirdparty/eventsourcing/core'
+));
+Bundle::start('eventsourcing');
+
+	Menu::container(array('storeowner', 'reseller'), 'backend')
+		->add('accounts', 'Accounts', array('class' => 'has_subs'), MenuItems::factory()->add('accounts/add', 'Add Account'));
+	
+	$pages_subs = MenuItems::factory()->add('pages/add', 'Add Page');
+
+	Menu::container('storeowner')
+		->add('pages', 'Pages', array(), $pages_subs);
+
+	die(Menu::container('storeowner'));
+
+Autoloader::map(array(
+	'Shophub_Base_Controller' => __DIR__ . DS . 'controllers/base.php',
+));
 
 $bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles', FilesystemIterator::SKIP_DOTS);
 

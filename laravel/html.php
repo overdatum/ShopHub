@@ -317,7 +317,7 @@ class HTML {
 			}
 			else
 			{
-				$html .= '<li>'.static::entities($value).'</li>';
+				$html .= '<li>'.$value.'</li>';
 			}
 		}
 

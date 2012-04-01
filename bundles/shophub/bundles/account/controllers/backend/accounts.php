@@ -1,29 +1,12 @@
 <?php
 
-class Account_Backend_Accounts_Controller extends Controller {
+class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public $restful = true;
+
 	public $layout = true;
 
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->filter('before', 'auth|is_admin');
-	}
-
-	public function layout()
-	{
-		return View::make('shophub::layouts.default')->with(
-			'header_data', array(
-				'title' => 'Admin | Accounts'
-			)
-		)->with(
-			'menu_data', array(
-				'menu' => Config::get('menus.admin')
-			)
-		);
-	}
+	public $meta_title = 'Accounts';
 
 	public function get_index()
 	{
@@ -66,12 +49,12 @@ class Account_Backend_Accounts_Controller extends Controller {
 	public function post_add()
 	{
 		$account = new Account;
+		$account->fill(Input::all());
 
-		$errors = $account->validate_and_insert();
-		if(count($errors->all()) > 0)
+		if( ! $account->save())
 		{
 			return Redirect::to('admin/accounts/add')
-						 ->with('errors', $errors)
+						 ->with('errors', $account->errors)
 				   ->with_input('except', array('password'));
 		}
 

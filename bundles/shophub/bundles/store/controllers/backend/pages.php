@@ -1,5 +1,6 @@
 <?php
-class Store_Backend_Pages_Controller extends Controller {
+
+class Store_Backend_Pages_Controller extends Shophub_Base_Controller {
 
 	public $restful = true;
 	public $layout = true;

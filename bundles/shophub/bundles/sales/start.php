@@ -5,9 +5,10 @@ Route::controller(array(
 	'sales::leaderboard',
 ), '(:controller)/(:wildcards)', 'index');
 
-Menu::container(array('admin', 'sales'), true)
+Menu::container(array('admin', 'sales'), 'backend')
 	->add('customers', __('shophub::menu.backend.customers'));
 
 Menu::add('leaderboard', __('shopbhub::menu.loaderboard'));
 
-echo Menu::container('sales');
+
+//echo Menu::container('admin');

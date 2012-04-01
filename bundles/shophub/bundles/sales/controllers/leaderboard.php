@@ -1,5 +1,6 @@
 <?php
-class Admin_Accounts_Controller extends Controller {
+
+class Admin_Accounts_Controller extends ShopHub_Base_Controller {
 
 	public $restful = true;
 	public $layout = true;
