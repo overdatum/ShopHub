@@ -4,58 +4,59 @@ use Laravel\HTML;
 
 class Menu {
 
-	public static $containers;
+	public static $containers = array();
 
-	static function container($containers = '', $prefix_links = false)
+	public $handles = array();
+
+	public function __construct($handles)
 	{
-		if( ! is_array($containers)) $containers = array($containers);
-
-		foreach ($containers as $container)
-		{
-			if( ! isset(static::$containers[$container]))
-			{
-				static::$containers[$container] = new MenuItems($container, $prefix_links);
-			}
-		}
-		
-		return new MenuGroup($containers);
-	}
-
-	public static function __callStatic($method, $parameters)
-	{
-		return call_user_func_array(array(static::container(), $method), $parameters);
-	}
-
-}
-
-class MenuGroup {
-
-	public $containers;
-
-	public function __construct($containers)
-	{
-		$this->containers = $containers;
+		$this->handles = $handles;
 	}
 
 	public function __call($method, $parameters)
 	{
-		foreach($this->containers as $index => $container)
+		foreach ($this->handles as $container)
 		{
-			Menu::$containers[$container] = call_user_func_array(array(Menu::$containers[$container], $method), $parameters);
+			static::$containers[$container] = call_user_func_array(array(static::$containers[$container], $method), $parameters);
 		}
 
 		return $this;
 	}
 
-	public function __toString()
+	public function render($list_attributes = array(), $link_attributes = array())
 	{
 		$html = '';
-		foreach($this->containers as $container)
+		foreach($this->handles as $container)
 		{
-			$html .= Menu::$containers[$container]->render();
+			$html .= static::$containers[$container]->render($list_attributes, $link_attributes);
 		}
 
 		return $html;
+	}
+
+	public function __toString()
+	{
+		return $this->render();
+	}
+
+	public static function container($containers = '', $prefix_links = false)
+	{
+		if( ! is_array($containers)) $containers = array($containers);
+
+		foreach ($containers as $container)
+		{
+			if( ! array_key_exists($container, static::$containers))
+			{
+				static::$containers[$container] = new MenuItems($container, $prefix_links);
+			}
+		}
+
+		return new Menu($containers);
+	}
+
+	public static function __callStatic($method, $parameters)
+	{
+		return call_user_func_array(array(static::container(), $method), $parameters);
 	}
 
 }
@@ -81,11 +82,6 @@ class MenuItems {
 	
 	public function add($url, $title, $attributes = array(), $children = null)
 	{
-		if(is_null($children))
-		{
-			$children = new MenuItems;
-		}
-		
 		$this->items[] = array(
 			'url' => $url,
 			'title' => $title,
@@ -100,35 +96,19 @@ class MenuItems {
 	{
 		$this->items = array_merge($this->items, $menuitems->items);
 	}
-
-	public function find($url)
-	{
-		foreach($this->items as $item)
-		{
-			if($item['url'] == $url) return $item['children'];
-			
-			$search = $item['children']->find($url);
-			
-			if( ! is_null($search))
-			{
-				return $search;
-			}
-		}
-		
-		throw new \Exception('Unable to locate the menu item "' . $url . '"');
-	}
 	
 	public function render($list_attributes = array(), $link_attributes = array(), $items = null)
 	{
 		if(is_null($items)) $items = $this->items;
-		
+		if(is_null($items)) return '';
+
 		$menu_items = array();
 		foreach($items as $item)
 		{
-			$menu_item = HTML::link(($this->prefix_links ? $this->container . '/' : '') . $item['url'], $item['title'], $link_attributes);
-			if( ! is_null($item['children']->items))
+			$menu_item = HTML::link(($this->prefix_links ? (gettype($this->prefix_links) == 'string' ? $this->prefix_links : $this->container) . '/' : '') . $item['url'], $item['title'], $link_attributes);
+			if( ! is_null($item['children']))
 			{
-				$menu_item .= $this->render($ul_attributes, $link_attributes, $item['children']->items);
+				$menu_item .= $this->render($list_attributes, $link_attributes, $item['children']->items);
 			}
 			$menu_items[] = $menu_item;
 		}
