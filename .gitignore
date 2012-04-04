@@ -1,5 +1,4 @@
 favicon.*
 .DS_Store
 logs/
-bundles/
 public/bootstrap/
