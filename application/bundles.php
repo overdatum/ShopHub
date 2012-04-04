@@ -37,5 +37,6 @@ return array(
 	'shophub' => array(
 		'auto' => true,
 		'location' => 'shophub/application'
-	)
+	),
+	'docs' => array('handles' => 'docs'),
 );

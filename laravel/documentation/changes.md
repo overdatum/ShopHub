@@ -1,9 +1,15 @@
-## Laravel Change Log
+# Laravel Change Log
 
 ## Contents
 
 - [Laravel 3.2](#3.2)
 - [Upgrading From 3.1](#upgrade-3.2)
+- [Laravel 3.1.4](#3.1.4)
+- [Upgrading From 3.1.3](#upgrade-3.1.4)
+- [Laravel 3.1.3](#3.1.3)
+- [Upgrading From 3.1.2](#uprade-3.1.3)
+- [Laravel 3.1.2](#3.1.2)
+- [Upgrading From 3.1.1](#upgrade-3.1.2)
 - [Laravel 3.1.1](#3.1.1)
 - [Upgrading From 3.1](#upgrade-3.1.1)
 - [Laravel 3.1](#3.1)
@@ -12,10 +18,49 @@
 <a name="3.2"></a>
 ## Laravel 3.2
 
+- [Added `to_array` method to the base Eloquent model](/docs/database/eloquent#to-array).
+- [Added `$hidden` static variable to the base Eloquent model](/docs/database/eloquent#to-array).
+- [Added `sync` method to has\_many\_and\_belongs\_to Eloquent relationship](/docs/database/eloquent#sync-method).
+- [Added `save` method to has\_many Eloquent relationship](/docs/database/eloquent#has-many-save).
+- Fixed the passing of strings into the Input::except method.
 - Fixed replacement of optional parameters in URL::transpose method.
+- Improved View performance by only loading contents from file once.
+- Fix handling of URLs beginning with has in URL::to.
 
 <a name="upgrade-3.2"></a>
 ## Upgrading From 3.1
+
+- Replace the **laravel** folder.
+- Add new **vendors** folder.
+
+<a name="3.1.4"></a>
+## Laravel 3.1.4
+
+- Fixes Response header casing bug.
+- Fixes SQL "where in" (...) short-cut bug.
+
+<a name="upgrade-3.1.4"></a>
+## Upgrading From 3.1.3
+
+- Replace the **laravel** folder.
+
+<a name="3.1.3"></a>
+## Laravel 3.1.3
+
+- Fixes **delete** method in Eloquent models.
+
+<a name="upgrade-3.1.3"></a>
+## Upgrade From 3.1.2
+
+- Replace the **laravel** folder.
+
+<a name="3.1.2"></a>
+## Laravel 3.1.2
+
+- Fixes Eloquent query method constructor conflict.
+
+<a name="upgrade-3.1.2"></a>
+## Upgrade From 3.1.1
 
 - Replace the **laravel** folder.
 
@@ -86,6 +131,7 @@ If you have created indexes on tables using the Laravel migration system and you
 Add the following to the **aliases** array in your **application/config/application.php** file:
 
 	'Eloquent' => 'Laravel\\Database\\Eloquent\\Model',
+	'Blade' => 'Laravel\\Blade',
 
 ### Update Eloquent many-to-many tables.
 
@@ -102,3 +148,15 @@ English pluralization and singularization is now automatic. Just completely repl
 ### Add the **fetch** option to your database configuration file.
 
 A new **fetch** option allows you to specify in which format you receive your database results. Just copy and paste the option from the new **application/config/database.php** file.
+
+### Add **database** option to your Redis configuration.
+
+If you are using Redis, add the "database" option to your Redis connection configurations. The "database" value can be zero by default.
+
+	'redis' => array(
+		'default' => array(
+			'host' => '127.0.0.1',
+			'port' => 6379,
+			'database' => 0
+		),
+	),
