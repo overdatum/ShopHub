@@ -72,7 +72,7 @@ Laravel\Autoloader::$aliases = $aliases;
 */
 
 Autoloader::directories(array(
-	path('app').'models',
+	//path('app').'models',
 	path('app').'libraries',
 ));
 

@@ -23,7 +23,7 @@ class Account extends Eloquent {
 	{
 		foreach(Auth::user()->roles as $role)
 		{
-			if($role->attributes['key'] == $key)
+			if($role->name == $key)
 			{
 				return true;
 			}
@@ -47,7 +47,7 @@ class Account extends Eloquent {
 
 		foreach(Auth::user()->roles as $role)
 		{
-			if(in_array($role->attributes['key'], $keys))
+			if(in_array($role->name, $keys))
 			{
 				return true;
 			}
