@@ -21,7 +21,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			}
 		}
 
-		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->get());
+		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->paginate());
 
 	}
 

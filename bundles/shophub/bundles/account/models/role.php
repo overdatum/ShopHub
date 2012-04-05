@@ -7,17 +7,9 @@ use Account\Events\V1\RolesUnassignedFromAccount;
 
 class Role extends Model {
 
-	//public $includes;
-
 	public static $table = 'roles';
 
-	/*public function __construct()
-	{
-		$this->includes = array('lang' => function($query)
-		{
-			$query->where_language_id(1);
-		});
-	}*/
+	public $includes = array('lang');
 
 	public function accounts()
 	{
