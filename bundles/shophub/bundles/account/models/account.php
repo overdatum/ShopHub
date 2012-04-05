@@ -12,7 +12,7 @@ class Account extends Model {
 
 	public static $table = 'accounts';
 
-	public static $accessible = array('name', 'email', 'password');
+	public static $accessible = array('name', 'email');
 
 	public $rules = array(
 		'email' => 'required|email',
