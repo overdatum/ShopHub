@@ -70,24 +70,9 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array('');
-		$active_roles = array();
+		$roles = array('') + array_pluck(Role::all(), function($role) { return $role->lang->name; });
 
-		foreach(Role::all() as $role)
-		{
-			$roles[$role->id] = $role->lang->name;
-		}
-
-		foreach(Account::find($id)->with('roles')->roles()->get() as $active_role)
-		{
-			$active_roles[] = $active_role->id;
-		}
-		
-		/*$roles = array_pluck(Role::all(), function($role) { 
-			return $role->lang->name;
-		});
-
-		$active_roles = array_pluck(Account::find($id)->with('roles')->roles()->get(), 'id', null);*/
+		$active_roles = array_pluck(Account::find($id)->with('roles')->roles()->get(), 'id', '');
 
 		$this->layout->content = View::make('account::backend.accounts.edit')
 									 ->with('account', $account)
@@ -98,30 +83,27 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 	public function put_edit($id = 0)
 	{
 		$account = Account::find($id);
+
 		if( ! $account OR $id == 0)
 		{
 			return Redirect::to('backend/accounts');
 		}
 
+		if(Input::get('password') !== '') Account::$accessible[] = 'password';
+
 		$account->fill(Input::all());
-
-		$account->roles()->sync(array_except('0', Input::get('role_ids')));
+		$account->roles()->sync(Input::get('role_ids'), '0');
 		
-		var_dump($account); die;
-
-		$account->save();
-
-		/*$errors = $account->validate_and_update();
-		if(count($errors->all()) > 0)
+		if( ! $account->save())
 		{
 			return Redirect::to('backend/accounts/edit')
-						 ->with('errors', $errors)
-				   ->with_input('except', array('password'));
+						 ->with('errors', $account->errors->all())
+				   ->with_input('except', array('password'));			
 		}
 
 		Notification::success('Successfully updated account');
 
-		return Redirect::to('backend/accounts');*/
+		return Redirect::to('backend/accounts');
 	}
 
 	public function get_delete($id = 0)
