@@ -18,7 +18,7 @@ class Role extends Model {
 
 	public function lang()
 	{
-		return $this->has_one('RoleLang');//->where_language_id(1);
+		return $this->has_one('RoleLang')->where_language_id(1);
 	}
 
 	public function attach_to_account_event()

@@ -8,7 +8,9 @@
 		</div>
 		<h1>Accounts</h1>
 	</div>
+
 	<?php Notification::show() ?>
+	
 	<?php if(count($accounts->results) > 0): ?>
 		<table class="table table-striped">
 			<thead>
