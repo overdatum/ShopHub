@@ -6,6 +6,8 @@ class Model extends Eloquent_Model {
 
 	public static $key = 'id';
 
+	public $events = array();
+
 	public function save()
 	{
 		if ( ! $this->dirty()) return true;
@@ -21,7 +23,6 @@ class Model extends Eloquent_Model {
 			foreach($this->get_dirty() as $key => $value)
 			{
 				if($key == 'event') continue;
-
 				$event->$key = $value;
 			}
 
@@ -33,7 +34,6 @@ class Model extends Eloquent_Model {
 			foreach($this->attributes as $key => $value)
 			{
 				if($key == 'event') continue;
-				
 				$event->$key = $value;
 			}
 
