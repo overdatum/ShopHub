@@ -1,9 +1,14 @@
 <?php
 
-function array_except($search, $array)
+function array_pluck($models, $value, $key = null)
 {
-	$key = array_search($search, $array);
-	if($key !== false) unset($array[$key]);
+	$result = array();
+	$i = 0;
+	foreach ($models as $model)
+	{
+		$result[is_null($key) ? $model->{$model::$key} : ($key instanceof Closure ? $key($model) : ($key == '' ? $i : $model->$key))] = $value instanceof Closure ? $value($model) : $model->$value;
+		$i++;
+	}
 
-	return $array;
+	return $result;
 }
