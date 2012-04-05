@@ -2,12 +2,6 @@
 
 // Bootstrapping ShopHub
 
-Bundle::register('anbu', array(
-	'auto' => true,
-	'location' => 'thirdparty/anbu'
-));
-Bundle::start('anbu');
-
 Bundle::register('menu', array(
 	'auto' => true,
 	'location' => 'thirdparty/menu'
@@ -27,6 +21,8 @@ Autoloader::map(array(
 Autoloader::namespaces(array(
 	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub'
 ));
+
+require __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
 
 $bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles', FilesystemIterator::SKIP_DOTS);
 

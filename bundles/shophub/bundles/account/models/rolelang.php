@@ -1,6 +1,6 @@
 <?php
 
-use EventSourcing\Model;
+use EventSourcing\Eloquent\Model;
 
 class RoleLang extends Model {
 

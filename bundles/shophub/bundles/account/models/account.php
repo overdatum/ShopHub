@@ -1,11 +1,10 @@
 <?php
 
-use EventSourcing\Model;
+use EventSourcing\Eloquent\Model;
+
 use Account\Events\V1\AccountRegistered;
 use Account\Events\V1\AccountUpdated;
 use Account\Events\V1\AccountDeleted;
-use Account\Events\V1\RolesAssignedToAccount;
-use Account\Events\V1\RolesUnassignedFromAccount;
 
 class Account extends Model {
 
@@ -66,59 +65,5 @@ class Account extends Model {
 
         return is_null($this->roles()->where('name', 'IN', $keys)->first());
     }
-
-	public function validate_and_insert()
-	{
-		$this->rules['password'] = 'required';
-		$validator = new Validator(Input::all(), $this->rules);
-
-		if ($validator->valid())
-		{
-			$this->email = Input::get('email');
-			$this->password = Hash::make(Input::get('password'));
-			$this->name = Input::get('name');
-			$this->save();
-
-			if(Input::has('role_ids'))
-			{
-				foreach(Input::get('role_ids') as $role_id)
-				{
-					if($role_id == 0) continue;
-
-					DB::table('accounts_roles')
-						->insert(array('account_id' => $this->id, 'role_id' => $role_id));
-				}
-			}
-		}
-
-		return $validator->errors;
-	}
-
-	public function validate_and_update()
-	{
-		$validator = new Validator(Input::all(), $this->rules);
-		if ($validator->valid())
-		{
-			DB::table('accounts_roles')->where_account_id($this->id)->delete();
-
-			if(Input::has('role_ids'))
-			{
-				foreach (Input::get('role_ids') as $role_id) {
-					if($role_id == 0) continue;
-
-					DB::table('accounts_roles')
-						->insert(array('account_id' => $this->id, 'role_id' => $role_id));
-				}
-			}
-
-			$this->email = Input::get('email');
-			if($password = Input::get('password')) $this->password = Hash::make($password);
-			$this->name = Input::get('name');
-			$this->save();
-		}
-
-		return $validator->errors;
-	}
-
 
 }

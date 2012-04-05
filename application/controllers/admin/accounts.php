@@ -32,7 +32,7 @@ class Admin_Accounts_Controller extends Controller {
 	{
 		if(Authority::cannot('read', 'Account'))
 		{
-			return Redirect::to('home');
+			return Redirect::to('auth/login');
 		}
 
 		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));

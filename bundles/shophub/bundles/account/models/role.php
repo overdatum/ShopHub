@@ -1,20 +1,23 @@
 <?php
 
-use EventSourcing\Model;
+use EventSourcing\Eloquent\Model;
+
+use Account\Events\V1\RolesAssignedToAccount;
+use Account\Events\V1\RolesUnassignedFromAccount;
 
 class Role extends Model {
 
-	public $includes;
+	//public $includes;
 
 	public static $table = 'roles';
 
-	public function __construct()
+	/*public function __construct()
 	{
 		$this->includes = array('lang' => function($query)
 		{
 			$query->where_language_id(1);
 		});
-	}
+	}*/
 
 	public function accounts()
 	{
@@ -23,15 +26,16 @@ class Role extends Model {
 
 	public function lang()
 	{
-		return $this->has_one('RoleLang');
+		return $this->has_one('RoleLang');//->where_language_id(1);
 	}
 
-	public function sync_event($assign_uuids, $unassign_uuids)
+	public function attach_to_account_event()
 	{
-		return array(
-			new RolesAssignedToAccount($this->id, $assign_uuids),
-			new RolesUnassignedFromAccount($this->id, $unassign_uuids)
-		);
+		return new RolesAssignedToAccount;
 	}
 
+	public function detach_from_account_event()
+	{
+		return new RolesUnassignedFromAccount;
+	}
 }

@@ -9,7 +9,7 @@
 		<h1>Accounts</h1>
 	</div>
 	<?php Notification::show() ?>
-	<?php if(count($accounts->results) > 0): ?>
+	<?php if(count($accounts) > 0): ?>
 		<table class="table table-striped">
 			<thead>
 				<tr>
@@ -20,7 +20,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			<?php foreach($accounts->results as $account): ?>
+			<?php foreach($accounts as $account): ?>
 				<tr>
 					<td>
 						<h2><?= $account->name ?></h2>
@@ -32,8 +32,12 @@
 						<?php
 						foreach($account->roles as $role)
 						{
-							echo '<b>'.$role->lang->name.'</b><br>'.$role->lang->description;
+							var_dump($role->attributes);
 						}
+						/*foreach($account->roles as $role)
+						{
+							echo '<b>'.$role->lang->name.'</b><br>'.$role->lang->description.'<br><br>';
+						}*/
 						?>
 					</td>
 					<td width="120" style="text-align:right">
@@ -45,7 +49,7 @@
 			</tbody>
 		</table>
 		<div class="pull-left">
-			<?= $accounts->links() ?>
+			
 		</div>
 	<?php else: ?>
 		<div class="well">

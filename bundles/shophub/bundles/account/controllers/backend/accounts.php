@@ -8,7 +8,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 	{
 		if(Authority::cannot('read', 'Account'))
 		{
-			return Redirect::to('home');
+			return Redirect::to('auth/login');
 		}
 
 		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));
@@ -21,7 +21,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			}
 		}
 
-		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->paginate(10));
+		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->get());
 
 	}
 
@@ -54,7 +54,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 				   ->with_input('except', array('password'));
 		}
 		
-		var_dump($account->event); die;
+		var_dump($account->events); die;
 
 		Notification::success('Successfully created account');
 
@@ -70,7 +70,8 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = $active_roles = array();
+		$roles = array('');
+		$active_roles = array();
 
 		foreach(Role::all() as $role)
 		{
@@ -81,6 +82,12 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		{
 			$active_roles[] = $active_role->id;
 		}
+		
+		/*$roles = array_pluck(Role::all(), function($role) { 
+			return $role->lang->name;
+		});
+
+		$active_roles = array_pluck(Account::find($id)->with('roles')->roles()->get(), 'id', null);*/
 
 		$this->layout->content = View::make('account::backend.accounts.edit')
 									 ->with('account', $account)
@@ -97,12 +104,14 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		}
 
 		$account->fill(Input::all());
-		$account->sync(Input::get('role_ids'));
+
+		$account->roles()->sync(array_except('0', Input::get('role_ids')));
+		
+		var_dump($account); die;
+
 		$account->save();
 
-		var_dump($account->event); die;
-
-		$errors = $account->validate_and_update();
+		/*$errors = $account->validate_and_update();
 		if(count($errors->all()) > 0)
 		{
 			return Redirect::to('backend/accounts/edit')
@@ -112,7 +121,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 		Notification::success('Successfully updated account');
 
-		return Redirect::to('backend/accounts');
+		return Redirect::to('backend/accounts');*/
 	}
 
 	public function get_delete($id = 0)
