@@ -1,6 +1,6 @@
 <?php
 
-use EventSourcing\EventHandlers;
+use History\EventHandlers;
 
 Autoloader::directories(array(
 	__DIR__ . DS . 'models',

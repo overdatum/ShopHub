@@ -1,4 +1,5 @@
 <?php
+
 return array(
 
 	/*
@@ -15,9 +16,8 @@ return array(
 		Authority::action_alias('manage', array('create', 'read', 'update', 'delete'));
 		Authority::action_alias('moderate', array('update', 'delete'));
 
-		if( ! count($account->roles) == 0) return false;
-
-
+	//	if(count($account->roles) == 0) return false;
+/*
 		if($account->has_role('store_owner'))
 		{
 			Authority::allow('manage', 'Store', function($store) use ($account)
@@ -44,13 +44,13 @@ return array(
 		}
 
 		if($account->has_role('admin'))
-		{
+		{*/
 			Authority::allow('manage', 'all');
-			Authority::deny('delete', 'User', function ($that_account) use ($account)
+			/*Authority::deny('delete', 'User', function ($that_account) use ($account)
 			{
 				return $that_account->id == $account->id;
 			});
-		}
+		}*/
 	}
 
 );

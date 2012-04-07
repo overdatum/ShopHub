@@ -266,6 +266,18 @@ class Table {
 	}
 
 	/**
+	 * Add a uuid column to the table.
+	 *
+	 * @param  string  $name
+	 * @param  bool    $increment
+	 * @return Fluent
+	 */
+	public function uuid($name)
+	{
+		return $this->column(__FUNCTION__, compact('name'));
+	}
+
+	/**
 	 * Add a float column to the table.
 	 *
 	 * @param  string  $name

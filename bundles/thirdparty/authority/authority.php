@@ -34,7 +34,7 @@ class Authority extends Authority\Ability {
 		It's recommended to move the config file (bundles/authority/config/authority.php) to your application/config directory
 		and change 'authority::authority' into 'authority'
 		*/
-		$config = Config::get('authority::authority');
+		$config = Config::get('shophub::authority');
 		call_user_func($config['initialize'], $user);
 	}
 

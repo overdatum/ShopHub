@@ -45,7 +45,6 @@ return array(
 	'attempt' => function($email, $password)
 	{
 		$account = Account::with('roles')->where_email($email)->first();
-
 		if ( ! is_null($account) and Hash::check($password, $account->password))
 		{
 			return $account;

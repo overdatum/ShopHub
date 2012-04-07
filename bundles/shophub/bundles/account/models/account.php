@@ -1,6 +1,7 @@
 <?php
 
-use EventSourcing\Eloquent\Model;
+use History\UUID;
+use History\Eloquent\Model;
 
 use Account\Events\V1\AccountRegistered;
 use Account\Events\V1\AccountUpdated;
@@ -12,31 +13,33 @@ class Account extends Model {
 
 	public static $table = 'accounts';
 
-	public static $accessible = array('name', 'email');
+	public static $accessible = array('name', 'email', 'language_uuid', 'uuid');
 
-	public $rules = array(
+	public static $versioned = true;
+
+	public static $rules = array(
 		'email' => 'required|email',
 		'name' => 'required',
 	);
 
 	public function create_event()
 	{
-		return new AccountRegistered(14, $this->name, $this->email);
+		return new AccountRegistered;
 	}
 
 	public function update_event()
 	{
-		return new AccountUpdated($this->id, $this->name, $this->email);
+		return new AccountUpdated;
 	}
 
 	public function delete_event()
 	{
-		return new AccountDeleted($this->id);
+		return new AccountDeleted;
 	}
 
 	public function roles()
 	{
-		return $this->has_many_and_belongs_to('Role', 'accounts_roles');
+		return $this->has_many_and_belongs_to('Role');
 	}
 
 	/**

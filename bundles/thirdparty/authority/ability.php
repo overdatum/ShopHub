@@ -21,7 +21,7 @@ use Laravel\Auth;
 
 abstract class Ability {
 
-	protected static $_rules = array();
+	public static $_rules = array();
 	protected static $_action_aliases = array();
 
 	public static function initialize($user)

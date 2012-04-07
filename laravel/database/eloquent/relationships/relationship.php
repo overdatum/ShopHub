@@ -75,7 +75,7 @@ abstract class Relationship extends Query {
 			$model = class_basename($model);
 		}
 
-		return strtolower(basename($model).'_id');
+		return strtolower(basename($model).'_'.$model::$key);
 	}
 
 	/**

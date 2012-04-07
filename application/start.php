@@ -169,3 +169,9 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
 	Session::load();
 }
+
+Bundle::register('shophub', array(
+	'auto' => true,
+	'location' => 'shophub/application'
+));
+Bundle::start('shophub');

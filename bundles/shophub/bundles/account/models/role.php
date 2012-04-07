@@ -1,7 +1,8 @@
 <?php
 
-use EventSourcing\Eloquent\Model;
+use History\Eloquent\Model;
 
+use Account\Events\V1\RoleCreated;
 use Account\Events\V1\RolesAssignedToAccount;
 use Account\Events\V1\RolesUnassignedFromAccount;
 
@@ -18,7 +19,12 @@ class Role extends Model {
 
 	public function lang()
 	{
-		return $this->has_one('RoleLang')->where_language_id(1);
+		return $this->has_one('RoleLang')->where_language_uuid(DB::table('languages')->where_abbreviation('dut')->first()->uuid);
+	}
+
+	public function create_event()
+	{
+		return new RoleCreated;
 	}
 
 	public function attach_to_account_event()
@@ -30,4 +36,5 @@ class Role extends Model {
 	{
 		return new RolesUnassignedFromAccount;
 	}
+
 }

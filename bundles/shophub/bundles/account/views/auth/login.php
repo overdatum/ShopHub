@@ -5,3 +5,4 @@
 		<?= Form::actions(array(Form::submit('Login', array('class' => 'btn large primary')))) ?>
 	<?= Form::close() ?>
 </div>
+<?php var_dump(Auth::user()); ?>

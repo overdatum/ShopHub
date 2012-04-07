@@ -327,6 +327,11 @@ class Postgres extends Grammar {
 		return ($column->increment) ? 'SERIAL' : 'INTEGER';
 	}
 
+	protected function type_uuid(Fluent $column)
+	{
+		return 'UUID';
+	}
+
 	/**
 	 * Generate the data-type definition for an integer.
 	 *

@@ -155,7 +155,7 @@ class Auth {
 	 */
 	public static function login($user, $remember = false)
 	{
-		$id = (is_object($user)) ? $user->id : (int) $user;
+		$id = (is_object($user)) ? $user->uuid : (int) $user;
 
 		if ($remember) static::remember($id);
 

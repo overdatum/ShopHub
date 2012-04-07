@@ -4,7 +4,7 @@ class Authority_add_authority_tables {
 
 	public function up()
 	{
-		Schema::create('users', function($table)
+		/*Schema::create('users', function($table)
 		{
 			$table->increments('id');
 			$table->string('email');
@@ -25,16 +25,16 @@ class Authority_add_authority_tables {
 			$table->increments('id');
 			$table->integer('user_id');
 			$table->integer('role_id');
-		});
+		});*/
 	}
 
 	public function down()
 	{
-		Schema::drop('users');
+		/*Schema::drop('users');
 
 		Schema::drop('roles');
 
-		Schema::drop('roles_users');
+		Schema::drop('roles_users');*/
 	}
 
 }

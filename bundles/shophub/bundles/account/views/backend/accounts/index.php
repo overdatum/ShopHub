@@ -22,7 +22,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			<?php foreach($accounts->results as $account): ?>
+				<?php foreach($accounts->results as $account): ?>
 				<tr>
 					<td>
 						<h2><?= $account->name ?></h2>
@@ -39,8 +39,8 @@
 						?>
 					</td>
 					<td width="120" style="text-align:right">
-						<?= HTML::link('backend/accounts/edit/'.$account->id, '<i class="icon pencil"></i>', array('class' => 'btn small')) ?>
-						<?php echo Authority::can('delete', 'Account', $account) ? '&nbsp; '.HTML::link('backend/accounts/delete/'.$account->id, 'Delete', array('class' => 'btn danger')) : ''; ?>
+						<?= HTML::link('backend/accounts/edit/'.$account->uuid, '<i class="icon pencil"></i>', array('class' => 'btn small')) ?>
+						<?php echo Authority::can('delete', 'Account', $account) ? '&nbsp; '.HTML::link('backend/accounts/delete/'.$account->uuid, 'Delete', array('class' => 'btn danger')) : ''; ?>
 					</td>
 				</tr>
 			<?php endforeach ?>

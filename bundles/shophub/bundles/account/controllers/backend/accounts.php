@@ -32,59 +32,64 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array();
-		foreach(Role::all() as $role)
-		{
-			$roles[$role->id] = $role->lang->name;
-		}
+		$roles = array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
 		
+		$languages = array_pluck(Language::all(), function($language) { return $language->name; }, 'uuid');
+
 		$this->layout->content = View::make('account::backend.accounts.add')
-									 ->with('roles', $roles);
+									 ->with('roles', $roles)
+									 ->with('languages', $languages);
 	}
 
 	public function post_add()
 	{
+		Account::$rules['password'] = 'required';
+		Account::$accessible[] = 'password';
+		
 		$account = new Account;
 		$account->fill(Input::all());
 
+		$account->roles()->sync(Input::get('role_ids'), '');
+
 		if( ! $account->save())
 		{
-			return Redirect::to('admin/accounts/add')
+			return Redirect::to('backend/accounts/add')
 						 ->with('errors', $account->errors)
 				   ->with_input('except', array('password'));
 		}
 		
-		var_dump($account->events); die;
-
 		Notification::success('Successfully created account');
 
 		return Redirect::to('backend/accounts');
 	}
 
-	public function get_edit($id = 0)
+	public function get_edit($uuid = null)
 	{
-		$account = Account::find($id);
+		$account = Account::find($uuid);
 
-		if( ! $account OR $id == 0 OR Authority::cannot('update', 'Account', $account))
+		if(is_null($account) OR is_null($uuid) OR Authority::cannot('update', 'Account', $account))
 		{
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array('') + array_pluck(Role::all(), function($role) { return $role->lang->name; });
+		$roles = array('' => '') + array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
 
-		$active_roles = array_pluck(Account::find($id)->with('roles')->roles()->get(), 'id', '');
+		$active_roles = array_pluck(Account::find($uuid)->with('roles')->roles()->get(), 'uuid', '');
+
+		$languages = array_pluck(Language::all(), function($language) { return $language->name; }, 'uuid');
 
 		$this->layout->content = View::make('account::backend.accounts.edit')
 									 ->with('account', $account)
 									 ->with('roles', $roles)
-									 ->with('active_roles', $active_roles);
+									 ->with('active_roles', $active_roles)
+ 									 ->with('languages', $languages);
 	}
 
-	public function put_edit($id = 0)
+	public function put_edit($uuid = null)
 	{
-		$account = Account::find($id);
+		$account = Account::find($uuid);
 
-		if( ! $account OR $id == 0)
+		if(is_null($account) OR Authority::cannot('update', 'Account', $account))
 		{
 			return Redirect::to('backend/accounts');
 		}
@@ -92,13 +97,13 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		if(Input::get('password') !== '') Account::$accessible[] = 'password';
 
 		$account->fill(Input::all());
-		$account->roles()->sync(Input::get('role_ids'), '0');
+		$account->roles()->sync(Input::get('role_ids'), '');
 		
 		if( ! $account->save())
 		{
-			return Redirect::to('backend/accounts/edit')
-						 ->with('errors', $account->errors->all())
-				   ->with_input('except', array('password'));			
+			return Redirect::to('backend/accounts/edit/' . $uuid)
+						 ->with('errors', $account->errors)
+				   ->with_input('except', array('password'));
 		}
 
 		Notification::success('Successfully updated account');
@@ -106,11 +111,11 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		return Redirect::to('backend/accounts');
 	}
 
-	public function get_delete($id = 0)
+	public function get_delete($uuid = null)
 	{
-		$account = Account::find($id);
+		$account = Account::find($uuid);
 
-		if( ! $account OR $id == 0 OR Authority::cannot('delete', 'Account', $account))
+		if(is_null($account) OR Authority::cannot('delete', 'Account', $account))
 		{
 			return Redirect::to('backend/accounts');
 		}
@@ -119,17 +124,16 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 									 ->with('account', $account);
 	}
 
-	public function put_delete($id = 0)
+	public function put_delete($uuid = null)
 	{
-		$account = Account::find($id);
+		$account = Account::find($uuid);
+	
 		if(is_null($account) OR Authority::cannot('delete', 'Account', $account))
 		{
 			return Redirect::to('backend/accounts');
 		}
 
 		$account->delete();
-
-		var_dump($account->event); die;
 
 		Notification::success('Successfully deleted account');
 

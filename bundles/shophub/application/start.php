@@ -8,24 +8,34 @@ Bundle::register('menu', array(
 ));
 Bundle::start('menu');
 
-Bundle::register('eventsourcing', array(
+Bundle::register('history', array(
 	'auto' => true,
-	'location' => 'thirdparty/eventsourcing/application'
+	'location' => 'thirdparty/history/application'
 ));
-Bundle::start('eventsourcing');
+Bundle::start('history');
+
+Bundle::register('authority', array(
+	'auto' => true,
+	'location' => 'thirdparty/authority'
+));
+Bundle::start('authority');
 
 Autoloader::map(array(
 	'Shophub_Base_Controller' => __DIR__ . DS . 'controllers/base.php',
 ));
 
-Autoloader::namespaces(array(
-	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub'
+Autoloader::directories(array(
+	__DIR__ . DS . 'models'
 ));
 
-require __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
+Autoloader::namespaces(array(
+	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub',
+	'Application' => __DIR__
+));
+
+require_once __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
 
 $bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles', FilesystemIterator::SKIP_DOTS);
-
 foreach ($bundles as $bundle)
 {
 	if ($bundle->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . $bundle->getFilename() . DS . 'start.php'))
@@ -38,12 +48,6 @@ foreach ($bundles as $bundle)
 		Bundle::start($bundle->getFilename());
 	}
 }
-
-Bundle::register('authority', array(
-	'auto' => true,
-	'location' => 'thirdparty/authority'
-));
-Bundle::start('authority');
 
 Route::filter('auth', function()
 {
