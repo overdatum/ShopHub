@@ -29,6 +29,11 @@ class Model extends Eloquent_Model {
 		$this->fill($attributes);
 	}
 
+	public static function from_session($session_key)
+	{
+		return unserialize(Session::get($session_key));
+	}
+
 	public function save()
 	{
 		if( ! $this->dirty() && count($this->events) == 0) return true;
