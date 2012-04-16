@@ -8,7 +8,7 @@ class Shophub_Add_Authority_Tables {
 	{
 		Schema::create('accounts', function($table)
 		{
-			$table->uuid('uuid')->defaults('uuid_generate_v4()');
+			$table->uuid('uuid')->default(DB::raw('uuid_generate_v4()'));
 			$table->string('email')->unique();
 			$table->string('password');
 			$table->string('name');
@@ -20,14 +20,14 @@ class Shophub_Add_Authority_Tables {
 
 		Schema::create('roles', function($table)
 		{
-			$table->uuid('uuid')->defaults('uuid_generate_v4()');
+			$table->uuid('uuid')->default(DB::raw('uuid_generate_v4()'));
 			$table->string('name')->unique();
 			$table->timestamps();
 		});
 
 		Schema::create('role_lang', function($table)
 		{
-			$table->uuid('uuid')->defaults('uuid_generate_v4()');
+			$table->uuid('uuid')->default(DB::raw('uuid_generate_v4()'));
 			$table->uuid('role_uuid');
 			$table->uuid('language_uuid');
 			$table->string('name');
@@ -36,7 +36,7 @@ class Shophub_Add_Authority_Tables {
 
 		Schema::create('account_role', function($table)
 		{
-			$table->uuid('uuid')->defaults('uuid_generate_v4()');
+			$table->uuid('uuid')->default(DB::raw('uuid_generate_v4()'));
 			$table->uuid('account_uuid');
 			$table->uuid('role_uuid');
 			$table->timestamps();
@@ -44,7 +44,7 @@ class Shophub_Add_Authority_Tables {
 
 		Schema::create('languages', function($table)
 		{
-			$table->uuid('uuid')->defaults('uuid_generate_v4()');
+			$table->uuid('uuid')->default(DB::raw('uuid_generate_v4()'));
 			$table->string('abbreviation');
 			$table->string('name');
 		});
@@ -131,25 +131,11 @@ class Shophub_Add_Authority_Tables {
 
 	public function down()
 	{
-		Schema::table('accounts', function($table)
-		{
-			$table->drop();
-		});
-
+		Schema::drop('accounts');
 		Schema::drop('role_lang');
-
-		Schema::table('roles', function($table)
-		{
-			$table->drop();
-		});
-
-		Schema::table('account_role', function($table)
-		{
-			$table->drop();
-		});
-
+		Schema::drop('roles');
+		Schema::drop('account_role');
 		Schema::drop('languages');
-
 		Schema::drop('events');
 	}
 

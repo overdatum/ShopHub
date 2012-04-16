@@ -2,3 +2,4 @@ favicon.*
 .DS_Store
 logs/
 public/bootstrap/
+storage/
