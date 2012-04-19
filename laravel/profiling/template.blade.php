@@ -53,7 +53,14 @@
 
 	<ul id="anbu-open-tabs" class="anbu-tabs">
 		<li><a data-anbu-tab="anbu-log" class="anbu-tab" href="#">Log <span class="anbu-count">{{ count($logs) }}</span></a></li>
-		<li><a data-anbu-tab="anbu-sql" class="anbu-tab" href="#">SQL <span class="anbu-count">{{ count($queries) }}</span></a></li>
+		<li>
+			<a data-anbu-tab="anbu-sql" class="anbu-tab" href="#">SQL 
+				<span class="anbu-count">{{ count($queries) }}</span>
+				@if (count($queries))
+				<span class="anbu-count">{{ array_sum(array_map(function($q) { return $q[1]; }, $queries)) }}ms</span>
+				@endif
+			</a>
+		</li>
 		<li class="anbu-tab-right"><a id="anbu-hide" href="#">&#8614;</a></li>
 		<li class="anbu-tab-right"><a id="anbu-close" href="#">&times;</a></li>
 		<li class="anbu-tab-right"><a id="anbu-zoom" href="#">&#8645;</a></li>
@@ -64,6 +71,6 @@
 	</ul>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src='//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'>\x3C/script>")</script>
 <script>{{ file_get_contents(path('sys').'profiling/profiler.js') }}</script>
 <!-- /ANBU - LARAVEL PROFILER -->

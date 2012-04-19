@@ -15,7 +15,6 @@
 - [Laravel 3.1](#3.1)
 - [Upgrading From 3.0](#upgrade-3.1)
 
-
 <a name="3.1.5"></a>
 ## Laravel 3.1.5
 

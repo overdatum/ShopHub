@@ -39,6 +39,10 @@ All views are stored within the **application/views** directory and use the PHP 
 		return View::make('home.index');
 	});
 
+#### Determining if a view exists:
+
+	$exists = View::exists('home.index');
+
 Sometimes you will need a little more control over the response sent to the browser. For example, you may need to set a custom header on the response, or change the HTTP status code. Here's how:
 
 #### Returning a custom response:
@@ -155,6 +159,13 @@ Each time a view is created, its "composer" event will be fired. You can listen 
 	});
 
 Now each time the "home" view is created, an instance of the View will be passed to the registered Closure, allowing you to prepare the view however you wish.
+
+#### Register a composer that handles multiple views:
+
+	View::composer(array('home', 'profile'), function($view)
+	{
+		//
+	});
 
 > **Note:** A view can have more than one composer. Go wild!
 

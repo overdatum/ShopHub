@@ -27,6 +27,17 @@ function __($key, $replacements = array(), $language = null)
 }
 
 /**
+ * Dump the given value and kill the script.
+ *
+ * @param  mixed  $value
+ * @return void
+ */
+function dd($value)
+{
+	die(var_dump($value));
+}
+
+/**
  * Get an item from an array using "dot" notation.
  *
  * <code>
@@ -340,13 +351,18 @@ function ends_with($haystack, $needle)
 /**
  * Determine if a given string contains a given sub-string.
  *
- * @param  string  $haystack
- * @param  string  $needle
+ * @param  string        $haystack
+ * @param  string|array  $needle
  * @return bool
  */
 function str_contains($haystack, $needle)
 {
-	return strpos($haystack, $needle) !== false;
+	foreach ((array) $needle as $n)
+	{
+		if (strpos($haystack, $n) !== false) return true;
+	}
+
+	return false;
 }
 
 /**
@@ -359,6 +375,17 @@ function str_contains($haystack, $needle)
 function str_finish($value, $cap)
 {
 	return rtrim($value, $cap).$cap;
+}
+
+/**
+ * Determine if the given object has a toString method.
+ *
+ * @param  object  $value
+ * @return bool
+ */
+function str_object($value)
+{
+	return is_object($value) and method_exists($value, '__toString');
 }
 
 /**
@@ -401,7 +428,7 @@ function class_basename($class)
  */
 function value($value)
 {
-	return ($value instanceof Closure) ? call_user_func($value) : $value;
+	return (is_callable($value) and ! is_string($value)) ? call_user_func($value) : $value;
 }
 
 /**
