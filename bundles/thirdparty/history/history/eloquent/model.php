@@ -103,6 +103,18 @@ class Model extends Eloquent_Model {
 		return true;
 	}
 
+	public function dirty()
+	{
+		if( ! $this->exists) return true;
+
+		foreach ($this->get_dirty() as $key => $value)
+		{
+			if($key != 'updated_at') return true;
+		}
+		
+		return false;
+	}
+
 	public function publish()
 	{
 		EventStore::save_events($this->events, static::$versioned);

@@ -37,7 +37,12 @@ class PDO {
 
 		foreach($rows as $row)
 		{
-			$event = unserialize($row->event);
+			$event = new $row->identifier;
+			foreach(json_decode($row->event) as $key => $value)
+			{
+				$event->$key = $value;
+			}
+
 			$event->version = $row->version;
 			$events[] = $event;
 		}
@@ -75,7 +80,7 @@ class PDO {
 			$rows[] = array(
 				'uuid' => $event->uuid,
 				'identifier' => get_class($event),
-				'event' => serialize($event),
+				'event' => json_encode((array) $event),
 				'version' => $version,
 				'executed_at' => 'NOW()'
 			);

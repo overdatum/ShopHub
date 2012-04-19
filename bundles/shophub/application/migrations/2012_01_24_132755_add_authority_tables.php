@@ -120,7 +120,7 @@ class Shophub_Add_Authority_Tables {
 			'email' => 'admin@admin.com',
 			'password' => '$2a$08$P/FbYAoXjLhz2hKcoE75L.TIPEU9dKpcyJOz5w82XrD8i1lXz3UUi',
 			'name' => 'Admin',
-			'language_uuid' => '9322499a-0892-4d9e-ac47-833d9c94ef90',
+			'language_uuid' => $dutch_language_uuid,
 			'created_at' => DB::raw('NOW()'),
 			'updated_at' => DB::raw('NOW()'),
 			'version' => 1

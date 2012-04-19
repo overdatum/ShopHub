@@ -3,11 +3,7 @@
 use History\EventHandlers;
 
 Autoloader::directories(array(
-	__DIR__ . DS . 'models',
-));
-
-Autoloader::namespaces(array(
-	'Account' => __DIR__
+	__DIR__ . DS . 'models'
 ));
 
 Route::controller(array(

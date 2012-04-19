@@ -134,7 +134,6 @@ class URL {
 		{
 			$root = preg_replace('~http://~', 'https://', $root, 1);
 		}
-
 		return rtrim($root, '/').'/'.ltrim($url, '/');
 	}
 

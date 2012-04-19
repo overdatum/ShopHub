@@ -20,6 +20,12 @@ Bundle::register('authority', array(
 ));
 Bundle::start('authority');
 
+Bundle::register('service', array(
+	'auto' => true,
+	'location' => 'thirdparty/service'
+));
+Bundle::start('service');
+
 Autoloader::map(array(
 	'Shophub_Base_Controller' => __DIR__ . DS . 'controllers/base.php',
 ));
@@ -29,24 +35,32 @@ Autoloader::directories(array(
 ));
 
 Autoloader::namespaces(array(
+	'Domain' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain',
+	'API' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api',
+	'Application' => __DIR__,
 	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub',
-	'Application' => __DIR__
 ));
 
 require_once __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
 
-$bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles', FilesystemIterator::SKIP_DOTS);
+$bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain', FilesystemIterator::SKIP_DOTS);
 foreach ($bundles as $bundle)
 {
-	if ($bundle->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . $bundle->getFilename() . DS . 'start.php'))
+	if ($bundle->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain' . DS . $bundle->getFilename() . DS . 'start.php'))
 	{
 		Bundle::register($bundle->getFilename(), array(
 			'auto' => true,
-			'location' => 'shophub' . DS . 'bundles' . DS . $bundle->getFilename()
+			'location' => 'shophub' . DS . 'bundles' . DS . 'domain' . DS . $bundle->getFilename()
 		));
 
 		Bundle::start($bundle->getFilename());
 	}
+}
+
+$services = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'api', FilesystemIterator::SKIP_DOTS);
+foreach ($services as $service)
+{
+	require __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api' . DS . $service->getFilename();
 }
 
 Route::filter('auth', function()

@@ -22,7 +22,6 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		}
 
 		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->paginate());
-
 	}
 
 	public function get_add()
@@ -32,8 +31,10 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('backend/accounts');
 		}
 
+		//$roles = Api::call(array('role', 'all'));
+
 		$roles = array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
-		
+
 		$languages = array_pluck(Language::all(), function($language) { return $language->name; }, 'uuid');
 
 		$this->layout->content = View::make('account::backend.accounts.add')
@@ -98,7 +99,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 		$account->fill(Input::all());
 		$account->roles()->sync(Input::get('role_ids'), '');
-		
+
 		if( ! $account->save())
 		{
 			return Redirect::to('backend/accounts/edit/' . $uuid)

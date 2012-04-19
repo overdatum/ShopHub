@@ -123,7 +123,7 @@ Event::listen(Lang::loader, function($bundle, $language, $file)
 
 if (Config::get('application.profiler'))
 {
-	Profiler::attach();
+	//Profiler::attach();
 }
 
 /*

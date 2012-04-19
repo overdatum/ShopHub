@@ -3,9 +3,9 @@
 use History\UUID;
 use History\Eloquent\Model;
 
-use Account\Events\V1\AccountRegistered;
-use Account\Events\V1\AccountUpdated;
-use Account\Events\V1\AccountDeleted;
+use Domain\Account\Events\V1\AccountRegistered;
+use Domain\Account\Events\V1\AccountUpdated;
+use Domain\Account\Events\V1\AccountDeleted;
 
 class Account extends Model {
 
