@@ -1,3 +1,3 @@
-<?php namespace Domain\Account\Events\V1;
+<?php namespace ShopHub\Domain\Account\Events\V1;
 
 class AccountRegistered {}

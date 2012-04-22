@@ -35,7 +35,7 @@ Autoloader::directories(array(
 ));
 
 Autoloader::namespaces(array(
-	'Domain' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain',
+	'ShopHub\\Domain' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain',
 	'API' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api',
 	'Application' => __DIR__,
 	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub',
