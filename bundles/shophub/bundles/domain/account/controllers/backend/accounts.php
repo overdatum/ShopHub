@@ -1,5 +1,7 @@
 <?php
 
+use ShopHub\API;
+
 class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public $meta_title = 'Accounts';
@@ -11,17 +13,30 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('auth/login');
 		}
 
-		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));
+		
+//		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));
+
+		$options = array(
+			'offset' => 0,
+			'limit' => 10
+		);
 
 		if(Input::has('q'))
 		{
-			foreach(array('name', 'email') as $column)
-			{
-				$accounts->or_where($column, '~*', Input::get('q'));
-			}
+			$options['search'] = array(
+				'string' => Input::get('q'),
+				'columns' => array(
+					'name', 
+					'email'
+				) 
+			);
 		}
 
-		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts->paginate());
+		$accounts = API::get(array('account', 'all'), $options);
+
+		$accounts = Paginator::make($accounts, 1000, '10');
+var_dump($accounts); die;
+		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts);
 	}
 
 	public function get_add()
@@ -30,8 +45,6 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 		{
 			return Redirect::to('backend/accounts');
 		}
-
-		//$roles = Api::call(array('role', 'all'));
 
 		$roles = array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
 
