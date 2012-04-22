@@ -1,5 +1,6 @@
 <?php namespace History\Eloquent;
 
+use DateTime;
 use Exception;
 use Laravel\Database\Eloquent\Relationships\Has_Many_And_Belongs_To as Eloquent_Has_Many_And_Belongs_To;
 
@@ -41,7 +42,7 @@ class Has_Many_And_Belongs_To extends Eloquent_Has_Many_And_Belongs_To {
 
 			$event = $this->model->$method();
 			$event->uuid = $this->base->uuid;
-			$event->created_at = $this->base->get_timestamp();
+			$event->created_at = new DateTime;
 			$event->updated_at = $event->created_at;
 			$event->{strtolower(get_class($this->model)) . '_uuids'} = $attach_ids;
 
@@ -55,8 +56,6 @@ class Has_Many_And_Belongs_To extends Eloquent_Has_Many_And_Belongs_To {
 			
 			$event = $this->model->$method();
 			$event->uuid = $this->base->uuid;
-			$event->created_at = $this->base->get_timestamp();
-			$event->updated_at = $event->created_at;
 			$event->{strtolower(get_class($this->model)) . '_uuids'} = $detach_ids;
 
 			$this->base->events[] = $event;
