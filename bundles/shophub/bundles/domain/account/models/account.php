@@ -3,9 +3,9 @@
 use History\UUID;
 use History\Eloquent\Model;
 
-use Domain\Account\Events\V1\AccountRegistered;
-use Domain\Account\Events\V1\AccountUpdated;
-use Domain\Account\Events\V1\AccountDeleted;
+use ShopHub\Domain\Account\Events\V1\AccountRegistered;
+use ShopHub\Domain\Account\Events\V1\AccountUpdated;
+use ShopHub\Domain\Account\Events\V1\AccountDeleted;
 
 class Account extends Model {
 
@@ -22,6 +22,18 @@ class Account extends Model {
 		'name' => 'required',
 	);
 
+	public static $hidden = array('password', 'language_uuid');
+
+	public function language()
+	{
+		return $this->belongs_to('Language', 'language_uuid');
+	}
+
+	public function roles()
+	{
+		return $this->has_many_and_belongs_to('Role');
+	}
+
 	public function create_event()
 	{
 		return new AccountRegistered;
@@ -35,11 +47,6 @@ class Account extends Model {
 	public function delete_event()
 	{
 		return new AccountDeleted;
-	}
-
-	public function roles()
-	{
-		return $this->has_many_and_belongs_to('Role');
 	}
 
 	/**
