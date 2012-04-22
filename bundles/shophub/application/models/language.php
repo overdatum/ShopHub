@@ -10,6 +10,8 @@ class Language extends Model {
 
 	public static $table = 'languages';
 
+	public static $key = 'uuid';
+
 	public function create_event()
 	{
 		return new LanguageRegistered;

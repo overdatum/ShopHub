@@ -10,7 +10,7 @@ class Role extends Model {
 
 	public static $table = 'roles';
 
-	public $includes = array('lang');
+	public static $key = 'uuid';
 
 	public function accounts()
 	{
@@ -19,7 +19,7 @@ class Role extends Model {
 
 	public function lang()
 	{
-		return $this->has_one('RoleLang')->where_language_uuid(DB::table('languages')->where_abbreviation('dut')->first()->uuid);
+		return $this->has_one('RoleLang'); //->where_language_uuid(DB::table('languages')->where_abbreviation('dut')->first()->uuid);
 	}
 
 	public function create_event()
