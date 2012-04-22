@@ -12,6 +12,11 @@ Autoloader::map(array(
  */
 Service::register('json', function(Service $service)
 {
+	if(false)
+	{
+		return "<script>var test = " . json_encode($service->data) . "; console.log(test);</script>";
+	}
+	
 	$service->header('Content-Type', 'application/json');
 
 	return json_encode($service->data);
