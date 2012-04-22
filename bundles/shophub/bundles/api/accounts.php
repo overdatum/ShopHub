@@ -1,54 +1,44 @@
 <?php namespace API;
 
 use Laravel\Database as DB;
+use Laravel\Input;
 use Service;
 
 use Account;
+use Role;
 
-Service::post('account', array('json', 'xml'), function(Service $service)
+Service::post('api/account', array('json', 'xml'), function(Service $service)
 {
 	$account = new Account(Input::all());
-	$uuid = $account->save();
-	
-	$service->data = $uuid;
+	$account->save();
+	$service->data = $account->get_key();
 });
 
-Service::get('account/all', array('json', 'xml'), function(Service $service)
+Service::get('api/account/all', array('json', 'xml'), function(Service $service)
 {
-	$accounts = Account::with('roles')->get();
-	$results = array();
-	$language_uuids = array();
-	foreach ($accounts as $account)
+	$options = array_merge(array(
+		'offset' => 0,
+		'limit' => 20
+	), Input::all());
+
+	$accounts = Account::with(array('roles', 'roles.lang', 'language'));
+
+	if(array_key_exists('search', $options))
 	{
-		$language_uuids[] = $account->language_uuid;
-		foreach ($account->roles as $role) {
-			$account->attributes['roles'][] = $role->attributes;
+		foreach($options['search']['columns'] as $column)
+		{
+			$accounts->or_where($column, '~*', $options['search']['string']);
 		}
-		$results[] = $account->attributes;
-	}
-	
-	$languages = array_pluck(DB::table('languages')->where_in('uuid', $language_uuids)->get(), function($language)
-	{
-		return (array) $language;
-	}, 'uuid');
-
-	foreach ($results as &$result)
-	{
-		$result['language'] = $languages[$account->language_uuid];
-		unset($result['password']);
-		unset($result['language_uuid']);
 	}
 
-	$service->data = $results;
+	$accounts->skip($options['offset'])->take($options['limit']);
+
+	$service->data = array_map(function($account) {
+		return $account->to_array();
+	}, $accounts->get());
 });
 
-Service::get('account/(:any)', array('json', 'xml'), function(Service $service, $uuid)
+Service::get('api/account/(:any)', array('json', 'xml'), function(Service $service, $uuid)
 {
-	$account = DB::table('accounts')->where_uuid($uuid)->first();
-	$language = DB::table('languages')->where_uuid($account->language_uuid)->first();
-	$account->language = $language;
-	unset($account->password);
-	unset($account->language_uuid);
-	
-	$service->data = $account;
+	$service->data = Account::find($uuid)->to_array();
 });
