@@ -297,7 +297,7 @@ abstract class Model {
 
 			$foreign = "{$caller['function']}_id";
 		}
-
+		
 		return new Relationships\Belongs_To($this, $model, $foreign);
 	}
 
@@ -545,7 +545,7 @@ abstract class Model {
 	 *
 	 * @return array
 	 */
-	public function to_array()
+	public function to_array($order_key_relations = array())
 	{
 		$attributes = array();
 
@@ -562,6 +562,8 @@ abstract class Model {
 
 		foreach ($this->relationships as $name => $models)
 		{
+			if($name == 'pivot') continue;
+			
 			// If the relationship is not a "to-many" relationship, we can just
 			// to_array the related model and add it as an attribute to the
 			// array of existing regular attributes we gathered.
@@ -575,9 +577,17 @@ abstract class Model {
 			// to_array method, keying them both by name and ID.
 			else
 			{
+				$order_keys = in_array($name, $order_key_relations);
 				foreach ($models as $id => $model)
 				{
-					$attributes[$name][$id] = $model->to_array();
+					if($order_keys)
+					{
+						$attributes[$name][] = $model->to_array();
+					}
+					else
+					{
+						$attributes[$name][$id] = $model->to_array();
+					}
 				}
 			}
 		}
