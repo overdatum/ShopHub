@@ -156,15 +156,7 @@ Request::$foundation = RequestFoundation::createFromGlobals();
 
 if (Request::cli())
 {
-	foreach (Request::foundation()->server->get('argv') as $argument)
-	{
-		if (starts_with($argument, '--env='))
-		{
-			$environment = substr($argument, 6);
-
-			break;
-		}
-	}
+	$environment = get_cli_option('env');
 }
 else
 {
@@ -185,7 +177,7 @@ else
 |
 */
 
-if ( ! is_null($environment))
+if (isset($environment))
 {
 	Request::set_env($environment);
 }

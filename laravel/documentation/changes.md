@@ -15,6 +15,75 @@
 - [Laravel 3.1](#3.1)
 - [Upgrading From 3.0](#upgrade-3.1)
 
+<a name="3.2"></a>
+## Laravel 3.2
+
+- [Added `to_array` method to the base Eloquent model](/docs/database/eloquent#to-array).
+- [Added `$hidden` static variable to the base Eloquent model](/docs/database/eloquent#to-array).
+- [Added `sync` method to has\_many\_and\_belongs\_to Eloquent relationship](/docs/database/eloquent#sync-method).
+- [Added `save` method to has\_many Eloquent relationship](/docs/database/eloquent#has-many-save).
+- [Added `unless` structure to Blade template engine](/docs/views/templating#blade-unless).
+- [Added Blade comments](/docs/views/templating#blade-comments).
+- [Added simpler environment management](/docs/install#environments).
+- Added `View::exists` method.
+- Use [Memcached](http://php.net/manual/en/book.memcached.php) API instead of older [Memcache](http://php.net/manual/en/book.memcache.php) API.
+- Added support for bundles outside of the bundle directory.
+- Added support for DateTime database query bindings.
+- Migrated to the Symfony HttpFoundation component for core request / response handling.
+- Fixed the passing of strings into the `Input::except` method.
+- Fixed replacement of optional parameters in `URL::transpose` method.
+- Improved `update` handling on `Has_Many` and `Has_One` relationships.
+- Improved View performance by only loading contents from file once.
+- Fix handling of URLs beginning with has in `URL::to`.
+- Fix the resolution of unset Eloquent attributes.
+- Allows pivot table timestamps to be disabled.
+- Made the `get_timestamp` Eloquent method static.
+- `Request::secure` now takes `application.ssl` configuration option into consideration.
+- Simplified the `paths.php` file.
+- Only write file caches if number of minutes is greater than zero.
+- Added `$default` parameter to Bundle::option method.
+- Fixed bug present when using Eloquent models with Twig.
+- Allow multiple views to be registered for a single composer.
+- Added `Request::set_env` method.
+- `Schema::drop` now accepts `$connection` as second parameter.
+
+<a name="upgrade-3.2"></a>
+## Upgrading From 3.1
+
+- Replace the **laravel** folder.
+
+<a name="3.1.8"></a>
+## Laravel 3.1.8
+
+- Fixes possible WSOD when using Blade's @include expression.
+
+<a name="upgrade-3.1.8"></a>
+## Upgrading From 3.1.7
+
+- Replace the **laravel** folder.
+
+<a name="3.1.7"></a>
+## Laravel 3.1.7
+
+- Fixes custom validation language line loading from bundles.
+- Fixes double-loading of classes when overriding the core.
+- Classify migration names.
+
+<a name="upgrade-3.1.7"></a>
+## Upgrading From 3.1.6
+
+- Replace the **laravel** folder.
+
+<a name="3.1.6"></a>
+## Laravel 3.1.6
+
+- Fixes many-to-many eager loading in Eloquent.
+
+<a name="upgrade-3.1.6"></a>
+## Upgrading From 3.1.5
+
+- Replace the **laravel** folder.
+
 <a name="3.1.5"></a>
 ## Laravel 3.1.5
 
