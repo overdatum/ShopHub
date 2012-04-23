@@ -34,7 +34,8 @@
 						<?php
 						foreach($account->roles as $role)
 						{
-							echo '<b>'.$role->lang->name.'</b><br>'.$role->lang->description.'<br><br>';
+
+							//echo '<b>'.$role->lang->name.'</b><br>'.$role->lang->description.'<br><br>';
 						}
 						?>
 					</td>
