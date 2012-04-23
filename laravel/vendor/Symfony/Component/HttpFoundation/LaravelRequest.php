@@ -11,6 +11,11 @@ class LaravelRequest extends Request {
      */
     static public function createFromGlobals()
     {
+        if($json = json_decode(file_get_contents('php://input'), true))
+        {
+            $_POST = $_POST + $json;
+        }
+
         $request = new static($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);
 
         if (0 === strpos($request->server->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded')
