@@ -1,10 +1,13 @@
 <?php
 
 use ShopHub\API;
+use Laravel\Messages;
 
 class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public $meta_title = 'Accounts';
+
+	public $per_page = 10;
 
 	public function get_index()
 	{
@@ -13,13 +16,7 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('auth/login');
 		}
 
-		
-//		$accounts = Account::with('roles')->order_by(Input::get('sort_by', 'accounts.name'), Input::get('order', 'ASC'));
-
-		$options = array(
-			'offset' => 0,
-			'limit' => 10
-		);
+		$options = array();
 
 		if(Input::has('q'))
 		{
@@ -32,10 +29,19 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			);
 		}
 
+		$options = array_merge($options, array(
+			'offset' => (Input::get('page', 1) - 1) * $this->per_page,
+			'limit' => $this->per_page,
+			'sort_by' => Input::get('sort_by', 'name'),
+			'order' => Input::get('order', 'ASC')
+		));
+
+		$total = API::get(array('account', 'total'), $options);
+
 		$accounts = API::get(array('account', 'all'), $options);
 
-		$accounts = Paginator::make($accounts, 1000, '10');
-var_dump($accounts); die;
+		$accounts = Paginator::make($accounts, $total, $this->per_page);
+
 		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts);
 	}
 
@@ -46,9 +52,13 @@ var_dump($accounts); die;
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
+		$roles = array('' => '') + array_pluck(API::get(array('role', 'all')), function($role) { 
+			return $role->lang->name;
+		}, 'uuid');
 
-		$languages = array_pluck(Language::all(), function($language) { return $language->name; }, 'uuid');
+		$languages = array_pluck(API::get(array('language', 'all')), function($language) {
+			return $language->name;
+		}, 'uuid');
 
 		$this->layout->content = View::make('account::backend.accounts.add')
 									 ->with('roles', $roles)
@@ -57,40 +67,43 @@ var_dump($accounts); die;
 
 	public function post_add()
 	{
-		Account::$rules['password'] = 'required';
-		Account::$accessible[] = 'password';
-		
-		$account = new Account;
-		$account->fill(Input::all());
+		$response = API::post(array('account'), Input::all());
 
-		$account->roles()->sync(Input::get('role_ids'), '');
+		if( ! is_object($response))
+		{
+			Notification::success('Successfully created account');
 
-		if( ! $account->save())
+			return Redirect::to('backend/accounts');
+		}
+
+		if($response->code == 400)
 		{
 			return Redirect::to('backend/accounts/add')
-						 ->with('errors', $account->errors)
+						 ->with('errors', new Messages($response->errors))
 				   ->with_input('except', array('password'));
 		}
-		
-		Notification::success('Successfully created account');
 
-		return Redirect::to('backend/accounts');
+		return Event::first($response->code);
 	}
 
 	public function get_edit($uuid = null)
 	{
-		$account = Account::find($uuid);
+		$account = API::get(array('account', $uuid));
 
-		if(is_null($account) OR is_null($uuid) OR Authority::cannot('update', 'Account', $account))
+		if(is_null($account) OR Authority::cannot('update', 'Account', $account))
 		{
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array('' => '') + array_pluck(Role::all(), function($role) { return $role->lang->name; }, 'uuid');
+		$roles = array('' => '') + array_pluck(API::get(array('role', 'all')), function($role) {
+			return $role->lang->name;
+		}, 'uuid');
 
-		$active_roles = array_pluck(Account::find($uuid)->with('roles')->roles()->get(), 'uuid', '');
+		$active_roles = array_pluck($account->roles, 'uuid', '');
 
-		$languages = array_pluck(Language::all(), function($language) { return $language->name; }, 'uuid');
+		$languages = array_pluck(API::get(array('language', 'all')), function($language) {
+			return $language->name;
+		}, 'uuid');
 
 		$this->layout->content = View::make('account::backend.accounts.edit')
 									 ->with('account', $account)
@@ -101,33 +114,28 @@ var_dump($accounts); die;
 
 	public function put_edit($uuid = null)
 	{
-		$account = Account::find($uuid);
+		$response = API::put(array('account', $uuid), Input::all());
 
-		if(is_null($account) OR Authority::cannot('update', 'Account', $account))
+		if( ! is_object($response))
 		{
+			Notification::success('Successfully updated account');
+
 			return Redirect::to('backend/accounts');
 		}
 
-		if(Input::get('password') !== '') Account::$accessible[] = 'password';
-
-		$account->fill(Input::all());
-		$account->roles()->sync(Input::get('role_ids'), '');
-
-		if( ! $account->save())
+		if($response->code == 400)
 		{
 			return Redirect::to('backend/accounts/edit/' . $uuid)
-						 ->with('errors', $account->errors)
+						 ->with('errors', new Messages($response->errors))
 				   ->with_input('except', array('password'));
 		}
 
-		Notification::success('Successfully updated account');
-
-		return Redirect::to('backend/accounts');
+		return Event::first($response->code);
 	}
 
 	public function get_delete($uuid = null)
 	{
-		$account = Account::find($uuid);
+		$account = API::get(array('account', $uuid));
 
 		if(is_null($account) OR Authority::cannot('delete', 'Account', $account))
 		{
@@ -140,18 +148,14 @@ var_dump($accounts); die;
 
 	public function put_delete($uuid = null)
 	{
-		$account = Account::find($uuid);
-	
-		if(is_null($account) OR Authority::cannot('delete', 'Account', $account))
+		$response = API::delete(array('account', $uuid));
+
+		if( ! is_object($response))
 		{
-			return Redirect::to('backend/accounts');
+			Notification::success('Successfully deleted account');
 		}
 
-		$account->delete();
-
-		Notification::success('Successfully deleted account');
-
-		return Redirect::to('backend/accounts');
+		return Event::first($response->code);
 	}
 
 }
