@@ -1,12 +1,23 @@
 <?php
 
 use ShopHub\API;
+use Laravel\Event;
 use Laravel\Messages;
 
 class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
+	/**
+	 * Set the page title
+	 * 
+	 * @var string
+	 */
 	public $meta_title = 'Accounts';
 
+	/**
+	 * Accounts to show per page
+	 * 
+	 * @var int
+	 */
 	public $per_page = 10;
 
 	public function get_index()
@@ -16,8 +27,15 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('auth/login');
 		}
 
-		$options = array();
+		// Set API options
+		$options = array(
+			'offset' => (Input::get('page', 1) - 1) * $this->per_page,
+			'limit' => $this->per_page,
+			'sort_by' => Input::get('sort_by', 'name'),
+			'order' => Input::get('order', 'ASC')
+		);
 
+		// Add search to API options
 		if(Input::has('q'))
 		{
 			$options['search'] = array(
@@ -25,21 +43,17 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 				'columns' => array(
 					'name', 
 					'email'
-				) 
+				)
 			);
 		}
 
-		$options = array_merge($options, array(
-			'offset' => (Input::get('page', 1) - 1) * $this->per_page,
-			'limit' => $this->per_page,
-			'sort_by' => Input::get('sort_by', 'name'),
-			'order' => Input::get('order', 'ASC')
-		));
+		// Get the total amount of Accounts
+		$total = API::get(array('account', 'total'), $options)->get();
 
-		$total = API::get(array('account', 'total'), $options);
+		// Get the Accounts
+		$accounts = API::get(array('account', 'all'), $options)->get();
 
-		$accounts = API::get(array('account', 'all'), $options);
-
+		// Paginate the Accounts
 		$accounts = Paginator::make($accounts, $total, $this->per_page);
 
 		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts);
@@ -52,11 +66,13 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array('' => '') + array_pluck(API::get(array('role', 'all')), function($role) { 
+		// Get Roles and put it in a nice array for the dropdown
+		$roles = array('' => '') + array_pluck(API::get(array('role', 'all'))->get(), function($role) { 
 			return $role->lang->name;
 		}, 'uuid');
 
-		$languages = array_pluck(API::get(array('language', 'all')), function($language) {
+		// Get Languages and put it in a nice array for the dropdown
+		$languages = array_pluck(API::get(array('language', 'all'))->get(), function($language) {
 			return $language->name;
 		}, 'uuid');
 
@@ -67,41 +83,66 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public function post_add()
 	{
-		$response = API::post(array('account'), Input::all());
-
-		if( ! is_object($response))
+		if(Authority::cannot('create', 'Account'))
 		{
-			Notification::success('Successfully created account');
-
 			return Redirect::to('backend/accounts');
 		}
 
-		if($response->code == 400)
+		$response = API::post(array('account'), Input::all());
+
+		// Error were found our data! Redirect to form with errors and old input
+		if($response->error())
 		{
-			return Redirect::to('backend/accounts/add')
-						 ->with('errors', new Messages($response->errors))
-				   ->with_input('except', array('password'));
+			// Errors were found on our data! Redirect to form with errors and old input
+			if($response->code == 400)
+			{
+				return Redirect::to('backend/accounts/add')
+							 ->with('errors', new Messages($response->get()))
+					   ->with_input('except', array('password'));
+			}
+
+			return Event::first($response->code);
 		}
 
-		return Event::first($response->code);
+		// Add success notification
+		Notification::success('Successfully created account');
+
+		return Redirect::to('backend/accounts');
 	}
 
 	public function get_edit($uuid = null)
 	{
-		$account = API::get(array('account', $uuid));
-
-		if(is_null($account) OR Authority::cannot('update', 'Account', $account))
+		if(Authority::cannot('update', 'Account', $uuid))
 		{
 			return Redirect::to('backend/accounts');
 		}
 
-		$roles = array('' => '') + array_pluck(API::get(array('role', 'all')), function($role) {
+		// Get the Account
+		$response = API::get(array('account', $uuid));
+
+		// Handle response codes other than 200 OK
+		if($response->error())
+		{
+			return Event::first($response->code);
+		}
+
+		// The response body is the Account
+		$account = $response->get();
+
+		// Get Roles and put it in a nice array for the dropdown
+		$roles = array('' => '') + array_pluck(API::get(array('role', 'all'))->get(), function($role) {
 			return $role->lang->name;
 		}, 'uuid');
 
-		$active_roles = array_pluck($account->roles, 'uuid', '');
+		// Get the Roles that belong to a User and put it in a nice array for the dropdown
+		$active_roles = array();
+		if(isset($account->roles))
+		{ 
+			$active_roles = array_pluck($account->roles, 'uuid', '');
+		}
 
-		$languages = array_pluck(API::get(array('language', 'all')), function($language) {
+		// Get Languages and put it in a nice array for the dropdown
+		$languages = array_pluck(API::get(array('language', 'all'))->get(), function($language) {
 			return $language->name;
 		}, 'uuid');
 
@@ -114,33 +155,52 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public function put_edit($uuid = null)
 	{
-		$response = API::put(array('account', $uuid), Input::all());
-
-		if( ! is_object($response))
+		if(Authority::cannot('update', 'Account', $uuid))
 		{
-			Notification::success('Successfully updated account');
-
 			return Redirect::to('backend/accounts');
 		}
 
-		if($response->code == 400)
+		// Update the Account
+		$response = API::put(array('account', $uuid), Input::all());
+
+		// Handle response codes other than 200 OK
+		if($response->error())
 		{
-			return Redirect::to('backend/accounts/edit/' . $uuid)
-						 ->with('errors', new Messages($response->errors))
-				   ->with_input('except', array('password'));
+			// Errors were found on our data! Redirect to form with errors and old input
+			if($response->code == 400)
+			{
+				return Redirect::to('backend/accounts/edit/' . $uuid)
+							 ->with('errors', new Messages($response->get()))
+					   ->with_input('except', array('password'));
+			}
+
+			return Event::first($response->code);
 		}
 
-		return Event::first($response->code);
+		// Add success notification
+		Notification::success('Successfully updated account');
+
+		return Redirect::to('backend/accounts');
 	}
 
 	public function get_delete($uuid = null)
 	{
-		$account = API::get(array('account', $uuid));
-
-		if(is_null($account) OR Authority::cannot('delete', 'Account', $account))
+		if(Authority::cannot('delete', 'Account', $uuid))
 		{
 			return Redirect::to('backend/accounts');
 		}
+
+		// Get the Account
+		$response = API::get(array('account', $uuid));
+
+		// Handle response codes other than 200 OK
+		if($response->error())
+		{
+			return Event::first($response->code);
+		}
+
+		// The request body is the Account
+		$account = $response->get();
 
 		$this->layout->content = View::make('account::backend.accounts.delete')
 									 ->with('account', $account);
@@ -148,14 +208,24 @@ class Account_Backend_Accounts_Controller extends Shophub_Base_Controller {
 
 	public function put_delete($uuid = null)
 	{
-		$response = API::delete(array('account', $uuid));
-
-		if( ! is_object($response))
+		if(Authority::cannot('delete', 'Account', $uuid))
 		{
-			Notification::success('Successfully deleted account');
+			return Redirect::to('backend/accounts');
 		}
 
-		return Event::first($response->code);
+		// Delete the Account
+		$response = API::delete(array('account', $uuid));
+
+		// Handle response codes other than 200 OK
+		if($response->error())
+		{
+			return Event::first($response->code);
+		}
+
+		// Add success notification
+		Notification::success('Successfully deleted account');
+
+		return Redirect::to('backend/accounts');
 	}
 
 }

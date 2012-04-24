@@ -10,7 +10,7 @@
 	</div>
 
 	<?php Notification::show() ?>
-	
+
 	<?php if(count($accounts->results) > 0): ?>
 		<table class="table table-striped">
 			<thead>
@@ -32,10 +32,12 @@
 					</td>
 					<td>
 						<?php
-						foreach($account->roles as $role)
+						if(array_key_exists('roles', $account))
 						{
-
-							//echo '<b>'.$role->lang->name.'</b><br>'.$role->lang->description.'<br><br>';
+							foreach($account->roles as $role)
+							{
+								echo '<b>' . $role->lang->name . '</b><br>' . $role->lang->description . '<br><br>';
+							}
 						}
 						?>
 					</td>
