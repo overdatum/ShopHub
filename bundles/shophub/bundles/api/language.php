@@ -8,8 +8,20 @@ use Language;
 
 Service::post('api/language', array('json', 'xml'), function(Service $service)
 {
+	// Create a new Language object	
 	$language = new Language(Input::all());
-	$language->save();
+
+	// Try to save
+	if( ! $language->save())
+	{
+		// Return 400 response with errors
+		$service->status(400);
+		$service->data = (array) $language->errors->messages;
+
+		return $service;
+	}
+
+	// Return the language's uuid
 	$service->data = $language->get_key();
 });
 

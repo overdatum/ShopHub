@@ -8,8 +8,20 @@ use Role;
 
 Service::post('api/role', array('json', 'xml'), function(Service $service)
 {
-	$role = new Role(Input::all());
-	$role->save();
+	// Create a new Role object	
+	$roles = new Role(Input::all());
+
+	// Try to save
+	if( ! $role->save())
+	{
+		// Return 400 response with errors
+		$service->status(400);
+		$service->data = (array) $role->errors->messages;
+
+		return $service;
+	}
+
+	// Return the role's uuid
 	$service->data = $role->get_key();
 });
 

@@ -1,5 +1,6 @@
 <?php namespace API;
 
+use Laravel\Event;
 use Laravel\Response;
 use Laravel\Database as DB;
 use Laravel\Input;
@@ -10,21 +11,23 @@ use Role;
 
 Service::post('api/account', array('json', 'xml'), function(Service $service)
 {
+	// We are adding an account, password is accessible and required
 	Account::$rules['password'] = 'required';
+	Account::$rules['email'] .= '|unique:accounts,email';
 	Account::$accessible[] = 'password';
 
-	// Create a new Account object	
+	// Create a new Account object
 	$account = new Account(Input::all());
 
-	// Synq some roles
-	$account->roles()->sync(Input::get('role_ids'), '');
+	// Sync some roles
+	$account->roles()->sync(Input::get('role_uuids'), '');
 
 	// Try to save
 	if( ! $account->save())
 	{
 		// Return 400 response with errors
-		$errors = (array) $account->errors->messages;
-		return Response::make(json_encode($errors), 400, array('content-type', 'application/json'));
+		$service->status(400);
+		$service->data = (array) $account->errors->messages;
 	}
 	else
 	{
@@ -35,7 +38,19 @@ Service::post('api/account', array('json', 'xml'), function(Service $service)
 
 Service::put('api/account/(:any)', array('json', 'xml'), function(Service $service, $uuid = null)
 {
+	if( ! is_uuid($uuid))
+	{
+		return $service->status(400);
+	}
+
+	// Find the account we are updating
 	$account = Account::find($uuid);
+
+	if(is_null($account))
+	{
+		// Resource not found, return 404
+		return $service->status(404);
+	}
 
 	/* TODO
 	Authority::cannot('update', 'Account', $account))
@@ -43,20 +58,21 @@ Service::put('api/account/(:any)', array('json', 'xml'), function(Service $servi
 		return Event::first(401);
 	}*/
 
-	if(is_null($account))
-	{
-		return Event::first('404');
-	}
-
+	// If the password is set, we allow it to be updated
 	if(Input::get('password') !== '') Account::$accessible[] = 'password';
 
+	// Fill the account with the PUT data
 	$account->fill(Input::all());
-	$account->roles()->sync(Input::get('role_ids'), '');
 
+	// Sync the roles (attach & detach the appropiate ones)
+	$account->roles()->sync(Input::get('role_uuids'), '');
+
+	// Try to save
 	if( ! $account->save())
 	{
-		$errors = (array) $account->errors->messages;
-		return Response::make(json_encode($errors), 400, array('content-type', 'application/json'));
+		// Return 400 response with errors
+		$service->status(400);
+		$service->data = (array) $account->errors->messages;
 	}
 });
 
@@ -77,7 +93,7 @@ Service::get('api/account/all', array('json', 'xml'), function(Service $service)
 	}
 
 	// Preparing our query
-	$accounts = Account::with(array('roles', 'language'));
+	$accounts = Account::with(array('roles', 'roles.lang', 'language'));
 
 	// Add where's to our query
 	if(array_key_exists('search', $options))
@@ -126,5 +142,33 @@ Service::get('api/account/total', array('json', 'xml'), function(Service $servic
 
 Service::get('api/account/(:any)', array('json', 'xml'), function(Service $service, $uuid)
 {
-	$service->data = Account::with(array('roles', 'language'))->where_uuid($uuid)->first()->to_array();
+	if( ! is_uuid($uuid))
+	{
+		return $service->status(400);
+	}
+
+	// Get the Account
+	$account = Account::with(array('roles', 'language'))->where_uuid($uuid)->first();
+	
+	if(is_null($account))
+	{
+		// Resource not found, return 404
+		return $service->status(404);
+	}
+
+	$service->data = $account->to_array();
+});
+
+Service::delete('api/account/(:any)', array('json', 'xml'), function(Service $service, $uuid)
+{
+	// Find the account we are updating
+	$account = Account::find($uuid);
+
+	if(is_null($account))
+	{
+		// Resource not found, return 404
+		return $service->status(404);
+	}
+
+	$account->delete();
 });
