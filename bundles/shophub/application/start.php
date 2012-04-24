@@ -41,6 +41,8 @@ Autoloader::namespaces(array(
 	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub',
 ));
 
+Autoloader::alias('ShopHub\\Profiling\\Profiler', 'Profiler');
+
 require_once __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
 
 $bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain', FilesystemIterator::SKIP_DOTS);
