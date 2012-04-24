@@ -83,6 +83,8 @@ class Service extends Response
 	 */
 	public static function respond($type, $allowed, Closure $callback, $args = array())
 	{
+		Profiler::detach();
+
 		if (is_null($type))
 		{
 			// Although we pass in the allowed list this does not guarantee

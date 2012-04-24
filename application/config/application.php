@@ -54,7 +54,7 @@ return array(
 	|
 	*/
 
-	'profiler' => false,
+	'profiler' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -153,7 +153,8 @@ return array(
 		'Memcached'  => 'Laravel\\Memcached',
 		//'Paginator'  => 'Laravel\\Paginator',
 		'Paginator'  => 'Twitter\\Bootstrap\\Paginator',
-		'Profiler'   => 'Laravel\\Profiling\\Profiler',
+		//'Profiler'   => 'Laravel\\Profiling\\Profiler',
+		'Profiler'   => 'ShopHub\\Profiling\\Profiler',
 		'URL'        => 'Laravel\\URL',
 		'Redirect'   => 'Laravel\\Redirect',
 		'Redis'      => 'Laravel\\Redis',
