@@ -47,9 +47,9 @@ class Service extends Response
 {
 
 	/**
-	 * @var array
+	 * @var mixed
 	 */
-	public $data = array();
+	public $data;
 
 	/**
 	 * @var string
@@ -112,6 +112,7 @@ class Service extends Response
 			// If there is no handler then this is considered a 404 error,
 			// despite the service being allowed.
 		}
+		
 		return Event::first('404'); // or other 4xx
 	}
 

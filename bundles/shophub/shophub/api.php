@@ -44,7 +44,7 @@ class API {
 		$body = curl_exec($ch);
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		Profiler::api($code, $method, $url, $body);
+		Profiler::api($code, $method, $url, $body, $input);
 
 		return new APIResponse($code, json_decode($body));
 	}

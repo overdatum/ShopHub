@@ -120,22 +120,6 @@ $response = Request::$route->call();
 
 /*
 |--------------------------------------------------------------------------
-| Persist The Session To Storage
-|--------------------------------------------------------------------------
-|
-| If a session driver has been configured, we will save the session to
-| storage so it is avaiable for the next request. This will also set
-| the session cookie in the cookie jar to be sent to the user.
-|
-*/
-
-if (Config::get('session.driver') !== '')
-{
-	Session::save();
-}
-
-/*
-|--------------------------------------------------------------------------
 | Send The Response To The Browser
 |--------------------------------------------------------------------------
 |
@@ -160,3 +144,19 @@ $response->send();
 */
 
 Event::fire('laravel.done', array($response));
+
+/*
+|--------------------------------------------------------------------------
+| Persist The Session To Storage
+|--------------------------------------------------------------------------
+|
+| If a session driver has been configured, we will save the session to
+| storage so it is avaiable for the next request. This will also set
+| the session cookie in the cookie jar to be sent to the user.
+|
+*/
+
+if (Config::get('session.driver') !== '')
+{
+	Session::save();
+}

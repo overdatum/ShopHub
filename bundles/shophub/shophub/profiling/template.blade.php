@@ -4,75 +4,114 @@
 	<div class="anbu-window">
 		<div class="anbu-content-area">
 			<div class="anbu-tab-pane anbu-table anbu-log">
-				@if (count($logs) > 0)
-					<table>
-						<tr>
-							<th>Type</th>
-							<th>Message</th>
-						</tr>
-						@foreach ($logs as $log)
+				@foreach($requests as $request)
+
+					@if (count($request['logs']) > 0)
+						<table>
 							<tr>
-								<td class="anbu-table-first">
-									{{ $log[0] }}
-								</td>
-								<td>
-									{{ $log[1] }}
-								</td>
-						@endforeach
-						</tr>
-					</table>
-				@else
-					<span class="anbu-empty">There are no log entries.</span>				
-				@endif
+								<th>Type</th>
+								<th>Message</th>
+							</tr>
+							@foreach ($request['logs'] as $log)
+								<tr>
+									<td class="anbu-table-first">
+										{{ $log[0] }}
+									</td>
+									<td>
+										{{ $log[1] }}
+									</td>
+							@endforeach
+							</tr>
+						</table>
+					@else
+						<span class="anbu-empty">There are no log entries.</span>				
+					@endif
+
+				@endforeach
 			</div>
 
 			<div class="anbu-tab-pane anbu-table anbu-sql">
-				@if (count($queries) > 0)
-					<table>
-						<tr>
-							<th>Time</th>
-							<th>Query</th>
-						</tr>
-						@foreach ($queries as $query)
+				@foreach($requests as $request)
+
+					@if (count($request['queries']) > 0)
+						<table>
 							<tr>
-								<td class="anbu-table-first">
-									{{ $query[1] }}ms
-								</td>
-								<td>
-									<pre>{{ $query[0] }}</pre>
-								</td>
+								<th>Time</th>
+								<th>Query</th>
 							</tr>
-						@endforeach
-					</table>
-				@else
-					<span class="anbu-empty">There have been no SQL queries executed.</span>
-				@endif
+							@foreach ($request['queries'] as $query)
+								<tr>
+									<td class="anbu-table-first">
+										{{ $query[1] }}ms
+									</td>
+									<td>
+										<pre>{{ $query[0] }}</pre>
+									</td>
+								</tr>
+							@endforeach
+						</table>
+					@else
+						<span class="anbu-empty">There have been no SQL queries executed.</span>
+					@endif
+
+				@endforeach
 			</div>
 
 			<div class="anbu-tab-pane anbu-table anbu-api">
-				@if (count($api_calls) > 0)
-					<table>
-						<tr>
-							<th>Request</th>
-							<th>Response</th>
-						</tr>
-						@foreach ($api_calls as $api_call)
-							<tr>
-								<td class="anbu-table-first">
-									<b>{{ $api_call[1] }}</b> <a href="{{ $api_call[2] }}" target="_blank">{{ $api_call[2] }}</a>
-								</td>
-								<td>
-									<b>Code</b><br>
-									<pre>{{ $api_call[0] }}</pre>
-									<b>Body</b><br>
-									<pre>{{ $api_call[3] }}</pre>
-								</td>
-							</tr>
-						@endforeach
-					</table>
-				@else
-					<span class="anbu-empty">There have not been any API calls.</span>
-				@endif
+				<table>
+					<tr>
+						<td style="padding: 0 !important; background: #222;">
+							<table style="height: 100%">
+								<tr>
+									<th>Requests</th>
+								</tr>
+								<tr>
+									<td style="width: 200px">
+										<ul>
+											<li><a href="#">Current request</a></li>
+											<li><a href="#">Previous request</a></li>
+										</ul>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td style="padding: 0 !important">
+							@foreach($requests as $request)
+
+								@if(count($request['api_calls']) > 0)
+									<table>
+										<tr>
+											<th>API Calls</th>
+											<th>Response</th>
+										</tr>
+										@foreach ($request['api_calls'] as $i => $api_call)
+										<tr>
+											<td class="anbu-table-first">
+												<b>{{ $api_call[1] }}</b> <a href="{{ $api_call[2] }}" target="_blank">{{ $api_call[2] }}</a>
+											</td>
+											<td>
+												<b>Code</b><br>
+												<pre>{{ $api_call[0] }}</pre>
+												@if ( ! is_null($api_call[3]))
+												<b>Body</b><br>
+												<pre>{{ $api_call[3] }}</pre>
+												@endif
+												@if ( ! empty($api_call[4]))
+												<b>Data</b><br>
+												<pre>{{ prettify_json(json_encode($api_call[4])) }}</pre>
+												@endif
+											</td>
+										</tr>
+										@endforeach
+										</tr>
+									</table>
+								@else
+									<span class="anbu-empty">There have not been any API calls.</span>
+								@endif
+							@endforeach
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</div>

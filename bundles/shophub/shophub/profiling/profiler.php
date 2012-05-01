@@ -1,5 +1,7 @@
 <?php namespace ShopHub\Profiling;
 
+use Laravel\File;
+use Laravel\Session;
 use Laravel\Event;
 use Laravel\Request;
 use Laravel\Profiling\Profiler as Laravel_Profiler;
@@ -19,14 +21,26 @@ class Profiler extends Laravel_Profiler {
 		}
 	}
 
+	public static function store_and_add_data()
+	{
+		$old_profiler = static::$data;
+
+		static::$data['requests'] = array(
+			static::$data,
+			Session::get('profiler', array('queries' => array('was not found'), 'logs' => array(), 'api_calls' => array()))
+		);
+
+		Session::put('profiler', $old_profiler);
+	}
+
 	/**
 	 * Add a log entry to the log entries array.
 	 *
 	 * @return void
 	 */
-	public static function api($code, $method, $url, $response)
+	public static function api($code, $method, $url, $response, $input)
 	{
-		static::$data['api_calls'][] = array($code, $method, $url, $response);
+		static::$data['api_calls'][] = array($code, $method, $url, $response, $input);
 	}
 
 	/**
@@ -36,8 +50,9 @@ class Profiler extends Laravel_Profiler {
 	 */
 	public static function detach()
 	{
-		// Clearing laravel.done Event to "detach" the profiler in case the API is ran on the same install
 		Event::clear('laravel.done');
+		Event::clear('laravel.log');
+		Event::clear('laravel.query');
 	}
 
 	/**
@@ -65,6 +80,7 @@ class Profiler extends Laravel_Profiler {
 		// browser. This will display the profiler's nice toolbar.
 		Event::listen('laravel.done', function($response)
 		{
+			Profiler::store_and_add_data();
 			echo Profiler::render($response);
 		});
 	}
