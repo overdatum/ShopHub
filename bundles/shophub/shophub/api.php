@@ -16,7 +16,7 @@ class API {
 			$segments = $segments + array('pretty' => true);
 		}
 
-		$url = 'http://local.shophub.io/api/' . implode('/', $arguments) . (count($segments) > 0 ? '?' . http_build_query($segments) : '');
+		$url = 'http://local.shophub.io/api/v1/' . implode('/', $arguments) . (count($segments) > 0 ? '?' . http_build_query($segments) : '');
 
 		$method = strtoupper($method);
 
