@@ -1,8 +1,8 @@
 <?php
 
 Route::controller(array(
-	'sales::backend.customers',
-	'sales::leaderboard',
+	'shophub_sales::backend.customers',
+	'shophub_sales::leaderboard',
 ), '(:controller)/(:wildcards)', 'index');
 
 Menu::container(array('admin', 'sales'), 'backend')

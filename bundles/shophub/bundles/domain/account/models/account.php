@@ -3,9 +3,9 @@
 use History\UUID;
 use History\Eloquent\Model;
 
-use ShopHub\Domain\Account\Events\V1\AccountRegistered;
-use ShopHub\Domain\Account\Events\V1\AccountUpdated;
-use ShopHub\Domain\Account\Events\V1\AccountDeleted;
+use ShopHub\Account\Events\V1\AccountRegistered;
+use ShopHub\Account\Events\V1\AccountUpdated;
+use ShopHub\Account\Events\V1\AccountDeleted;
 
 class Account extends Model {
 

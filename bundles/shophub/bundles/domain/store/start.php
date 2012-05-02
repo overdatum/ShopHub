@@ -1,9 +1,9 @@
 <?php
 
 Route::controller(array(
-	'store::backend.pages',
-	'store::backend.stores',
-	'stores::contact',
+	'shophub_store::backend.pages',
+	'shophub_store::backend.stores',
+	'shophub_stores::contact',
 ), '(:controller)/(:wildcards)', 'index');
 
 Menu::container(array('admin', 'store'), 'backend')

@@ -2,9 +2,9 @@
 
 use History\Eloquent\Model;
 
-use ShopHub\Domain\Account\Events\V1\RoleCreated;
-use ShopHub\Domain\Account\Events\V1\RolesAssignedToAccount;
-use ShopHub\Domain\Account\Events\V1\RolesUnassignedFromAccount;
+use ShopHub\Account\Events\V1\RoleCreated;
+use ShopHub\Account\Events\V1\RolesAssignedToAccount;
+use ShopHub\Account\Events\V1\RolesUnassignedFromAccount;
 
 class Role extends Model {
 

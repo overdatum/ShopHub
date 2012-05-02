@@ -56,7 +56,7 @@ class Shophub_Client_Account_Backend_Accounts_Controller extends Shophub_Base_Co
 		// Paginate the Accounts
 		$accounts = Paginator::make($accounts, $total, $this->per_page);
 
-		$this->layout->content = View::make('account::backend.accounts.index')->with('accounts', $accounts);
+		$this->layout->content = View::make('shophub_client_account::backend.accounts.index')->with('accounts', $accounts);
 	}
 
 	public function get_add()
@@ -76,7 +76,7 @@ class Shophub_Client_Account_Backend_Accounts_Controller extends Shophub_Base_Co
 			return $language->name;
 		}, 'uuid');
 
-		$this->layout->content = View::make('account::backend.accounts.add')
+		$this->layout->content = View::make('shophub_client_account::backend.accounts.add')
 									 ->with('roles', $roles)
 									 ->with('languages', $languages);
 	}
@@ -146,7 +146,7 @@ class Shophub_Client_Account_Backend_Accounts_Controller extends Shophub_Base_Co
 			return $language->name;
 		}, 'uuid');
 
-		$this->layout->content = View::make('account::backend.accounts.edit')
+		$this->layout->content = View::make('shophub_client_account::backend.accounts.edit')
 									 ->with('account', $account)
 									 ->with('roles', $roles)
 									 ->with('active_roles', $active_roles)
@@ -202,7 +202,7 @@ class Shophub_Client_Account_Backend_Accounts_Controller extends Shophub_Base_Co
 		// The request body is the Account
 		$account = $response->get();
 
-		$this->layout->content = View::make('account::backend.accounts.delete')
+		$this->layout->content = View::make('shophub_client_account::backend.accounts.delete')
 									 ->with('account', $account);
 	}
 

@@ -2,7 +2,7 @@
 
 use History\Bus;
 
-Bus::listen('ShopHub\Domain\Account\Events\V1\RoleCreated', function($event) {
+Bus::listen('ShopHub\Account\Events\V1\RoleCreated', function($event) {
 	DB::table('roles')->insert((array) $event);
 });
 
