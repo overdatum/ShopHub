@@ -25,13 +25,7 @@ Bundle::register('service', array(
 	'location' => 'thirdparty/service'
 ));
 Bundle::start('service');
-/*
-Bundle::register('shophub_api', array(
-	'auto' => true,
-	'location' => 'shophub/bundles/api'
-));
-Bundle::start('shophub_api');
-*/
+
 Autoloader::map(array(
 	'Shophub_Base_Controller' => __DIR__ . DS . 'controllers/base.php',
 ));
@@ -40,48 +34,57 @@ Autoloader::directories(array(
 	__DIR__ . DS . 'models'
 ));
 
+define('SH_CORE', __DIR__ . DS . '..' . DS . 'shophub');
+
+Autoloader::map(array(
+	'ShopHub\\Profiling\\Profiler' => SH_CORE . DS . 'profiling' . DS . 'profiler.php',
+	'ShopHub\\API' => SH_CORE . DS . 'api.php',
+	'ShopHub\\APIResponse' => SH_CORE . DS . 'apiresponse.php',
+	'ShopHub\\Service' => SH_CORE . DS . 'service.php',
+));
+
 Autoloader::namespaces(array(
-	'ShopHub\\Domain' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain',
-	'API' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api',
-	'Application' => __DIR__,
-	'ShopHub' => __DIR__ . DS . '..' . DS . 'shophub',
+	'ShopHub' => __DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain',
 ));
 
 require_once __DIR__ . DS . '..' . DS . 'shophub' . DS . 'helpers' . EXT;
 
-$bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain', FilesystemIterator::SKIP_DOTS);
-foreach ($bundles as $bundle)
+$shophub_domains = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain', FilesystemIterator::SKIP_DOTS);
+foreach ($shophub_domains as $shophub_domain)
 {
-	if ($bundle->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain' . DS . $bundle->getFilename() . DS . 'start.php'))
+	if ($shophub_domain->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'domain' . DS . $shophub_domain->getFilename() . DS . 'start.php'))
 	{
-		Bundle::register($bundle->getFilename(), array(
+		Bundle::register('shophub_domain_' . $shophub_domain->getFilename(), array(
 			'auto' => true,
-			'location' => 'shophub' . DS . 'bundles' . DS . 'domain' . DS . $bundle->getFilename()
+			'location' => 'shophub' . DS . 'bundles' . DS . 'domain' . DS . $shophub_domain->getFilename()
 		));
 
-		Bundle::start($bundle->getFilename());
+		Bundle::start('shophub_domain_' . $shophub_domain->getFilename());
 	}
 }
 
-$bundles = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'client', FilesystemIterator::SKIP_DOTS);
-foreach ($bundles as $bundle)
+$client_domains = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'client', FilesystemIterator::SKIP_DOTS);
+foreach ($client_domains as $client_domain)
 {
-	if ($bundle->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'client' . DS . $bundle->getFilename() . DS . 'start.php'))
+	if ($client_domain->isDir() && file_exists(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'client' . DS . $client_domain->getFilename() . DS . 'start.php'))
 	{
-		Bundle::register('shophub_client_' . $bundle->getFilename(), array(
+		Bundle::register('shophub_client_' . $client_domain->getFilename(), array(
 			'auto' => true,
-			'location' => 'shophub' . DS . 'bundles' . DS . 'client' . DS . $bundle->getFilename()
+			'location' => 'shophub' . DS . 'bundles' . DS . 'client' . DS . $client_domain->getFilename()
 		));
 
-		Bundle::start('shophub_client_' . $bundle->getFilename());
+		Bundle::start('shophub_client_' . $client_domain->getFilename());
 	}
 }
 
-$services = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'api', FilesystemIterator::SKIP_DOTS);
-foreach ($services as $service)
+$service_versions = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'api', FilesystemIterator::SKIP_DOTS);
+foreach ($service_versions as $service_version)
 {
-	if($service->getFilename() == 'controllers' || $service->getFilename() == 'start.php') continue;
-	require __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api' . DS . $service->getFilename();
+	$services = new FilesystemIterator(__DIR__ . DS . '..' . DS . 'bundles' . DS . 'api' . DS . $service_version->getFilename(), FilesystemIterator::SKIP_DOTS);
+	foreach ($services as $service)
+	{	
+		require __DIR__ . DS . '..' . DS . 'bundles' . DS . 'api' . DS . $service_version->getFilename() . DS . $service->getFilename();
+	}
 }
 
 Route::filter('auth', function()
@@ -96,11 +99,12 @@ Filter::register('can', function($action, $resource)
 
 View::composer('shophub::layouts.default', function($view)
 {
-	Asset::container('header')->add('jquery', 'js/jquery.min.js');
-	Asset::container('header')->add('bootstrap', 'bootstrap/bootstrap.css');
-	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-buttons.js', 'jquery');
-	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-dropdown.js', 'jquery');
-	Asset::container('header')->add('main', 'css/main.css');
+	Asset::container('header')->add('jquery', 'js/jquery.min.js')
+		->add('bootstrap', 'bootstrap/bootstrap.css')
+		->add('main', 'css/main.css');
 
-	$view->footer = View::make('shophub::partials.footer');
+	Asset::container('footer')->add('bootstrap', 'bootstrap/js/bootstrap-buttons.js', 'jquery')
+		->add('bootstrap', 'bootstrap/js/bootstrap-dropdown.js', 'jquery');
+
+	$view->nest('footer', 'shophub::partials.footer');
 });
