@@ -65,7 +65,7 @@ class Service extends Bundle_Service {
 	protected static function route($method, $route, $services, $action)
 	{
 		$prefix = 'api/';
-		$prefix .= (array_key_exists('prefix', static::$group) ? static::$group['prefix'] . '/' : '');
+		$prefix .= array_key_exists('prefix', static::$group) ? static::$group['prefix'] . '/' : '';
 
 		// Modify the route to accept the $type
 		$route = array(
