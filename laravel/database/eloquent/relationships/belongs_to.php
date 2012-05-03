@@ -32,7 +32,7 @@ class Belongs_To extends Relationship {
 	 */
 	protected function constrain()
 	{
-		$this->table->where($this->base->key(), '=', $this->foreign_value());
+		$this->table->where($this->model->key(), '=', $this->foreign_value());
 	}
 
 	/**
@@ -70,6 +70,8 @@ class Belongs_To extends Relationship {
 				$keys[] = $key;
 			}
 		}
+
+		if (count($keys) == 0) $keys = array(0);
 
 		$this->table->where_in($this->model->key(), array_unique($keys));
 	}

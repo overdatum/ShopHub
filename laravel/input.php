@@ -3,6 +3,13 @@
 class Input {
 
 	/**
+	 * The JSON payload for applications using Backbone.js or similar.
+	 *
+	 * @var object
+	 */
+	public static $json;
+
+	/**
 	 * The key used to store old input in the session.
 	 *
 	 * @var string
@@ -55,7 +62,14 @@ class Input {
 	 */
 	public static function get($key = null, $default = null)
 	{
-		$value = array_get(Request::foundation()->request->all(), $key);
+		$input = Request::foundation()->request->all();
+
+		if (is_null($key))
+		{
+			return array_merge($input, static::query());
+		}
+
+		$value = array_get($input, $key);
 
 		if (is_null($value))
 		{
@@ -83,6 +97,18 @@ class Input {
 	public static function query($key = null, $default = null)
 	{
 		return array_get(Request::foundation()->query->all(), $key, $default);
+	}
+
+	/**
+	 * Get the JSON payload for the request.
+	 *
+	 * @return object
+	 */
+	public static function json()
+	{
+		if ( ! is_null(static::$json)) return static::$json;
+
+		return static::$json = json_decode(Request::foundation()->getContent());
 	}
 
 	/**
@@ -172,6 +198,17 @@ class Input {
 	}
 
 	/**
+	 * Determine if the uploaded data contains a file.
+	 *
+	 * @param  string  $key
+	 * @return bool
+	 */
+	public static function has_file($key)
+	{
+		return ! is_null(static::file("{$key}.tmp_name"));
+	}
+	
+	/**
 	 * Move an uploaded file to permanent storage.
 	 *
 	 * This method is simply a convenient wrapper around move_uploaded_file.
@@ -235,6 +272,17 @@ class Input {
 	 * @return void
 	 */
 	public static function merge(array $input)
+	{
+		Request::foundation()->request->add($input);
+	}
+
+	/**
+	 * Replace the input for the current request.
+	 *
+	 * @param  array  $input
+	 * @return void
+	 */
+	public static function replace(array $input)
 	{
 		Request::foundation()->request->replace($input);
 	}

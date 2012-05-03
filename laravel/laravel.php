@@ -27,18 +27,24 @@ require 'core.php';
 
 set_exception_handler(function($e)
 {
+	require_once path('sys').'error'.EXT;
+
 	Error::exception($e);
 });
 
 
 set_error_handler(function($code, $error, $file, $line)
 {
+	require_once path('sys').'error'.EXT;
+
 	Error::native($code, $error, $file, $line);
 });
 
 
 register_shutdown_function(function()
 {
+	require_once path('sys').'error'.EXT;
+
 	Error::shutdown();
 });
 
@@ -120,17 +126,16 @@ $response = Request::$route->call();
 
 /*
 |--------------------------------------------------------------------------
-| Send The Response To The Browser
+| "Render" The Response
 |--------------------------------------------------------------------------
 |
-| We'll send the response back to the browser here. This method will also
-| send all of the response headers to the browser as well as the string
-| content of the Response. This should make the view available to the
-| browser and show something pretty to the user.
+| The render method evaluates the content of the response and converts it
+| to a string. This evaluates any views and sub-responses within the
+| content and sets the raw string result as the new response.
 |
 */
 
-$response->send();
+$response->render();
 
 /*
 |--------------------------------------------------------------------------

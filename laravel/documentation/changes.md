@@ -2,6 +2,19 @@
 
 ## Contents
 
+<<<<<<< HEAD
+=======
+- [Laravel 3.2](#3.2)
+- [Upgrading From 3.1](#upgrade-3.2)
+- [Laravel 3.1.9](#3.1.9)
+- [Upgrading From 3.1.8](#upgrade-3.1.9)
+- [Laravel 3.1.8](#3.1.8)
+- [Upgrading From 3.1.7](#upgrade-3.1.8)
+- [Laravel 3.1.7](#3.1.7)
+- [Upgrading From 3.1.6](#upgrade-3.1.7)
+- [Laravel 3.1.6](#3.1.6)
+- [Upgrading From 3.1.5](#upgrade-3.1.6)
+>>>>>>> laravel/develop
 - [Laravel 3.1.5](#3.1.5)
 - [Upgrading From 3.1.4](#upgrade-3.1.5)
 - [Laravel 3.1.4](#3.1.4)
@@ -34,7 +47,7 @@
 - Fixed replacement of optional parameters in `URL::transpose` method.
 - Improved `update` handling on `Has_Many` and `Has_One` relationships.
 - Improved View performance by only loading contents from file once.
-- Fix handling of URLs beginning with has in `URL::to`.
+- Fix handling of URLs beginning with hashes in `URL::to`.
 - Fix the resolution of unset Eloquent attributes.
 - Allows pivot table timestamps to be disabled.
 - Made the `get_timestamp` Eloquent method static.
@@ -47,9 +60,34 @@
 - Added `Request::set_env` method.
 - `Schema::drop` now accepts `$connection` as second parameter.
 - Added `Input::merge` method.
+- Added `Input::replace` method.
+- Added saving, saved, updating, creating, deleting, and deleted events to Eloquent.
+- Added new `Sectionable` interface to allow cache drivers to simulate namespacing.
+- Added support for `HAVING` SQL clauses.
+- Added `array_pluck` helper, similar to pluck method in Underscore.js.
+- Allow the registration of custom cache and session drivers.
+- Allow the specification of a separate asset base URL for using CDNs.
+- Allow a `starter` Closure to be defined in `bundles.php` to be run on Bundle::start.
+- Allow the registration of custom database drivers.
+- New, driver based authentication system.
+- Added Input::json() method for working with applications using Backbone.js or similar.
+- Added Response::json method for creating JSON responses.
+- Added Response::eloquent method for creating Eloquent responses.
+- Fixed bug when using many-to-many relationships on non-default database connection.
+- Added true reflection based IoC to container.
 
 <a name="upgrade-3.2"></a>
 ## Upgrading From 3.1
+
+- Replace the **laravel** folder.
+
+<a name="3.1.9"></a>
+## Laravel 3.1.9
+
+- Fixes cookie session driver bug that caused infinite loop on some occasions.
+
+<a name="upgrade-3.1.9"></a>
+## Upgrading From 3.1.8
 
 - Replace the **laravel** folder.
 

@@ -36,9 +36,9 @@ Event::listen('500', function()
 |--------------------------------------------------------------------------
 |
 | Filters provide a convenient method for attaching functionality to your
-| routes. The built-in "before" and "after" filters are called before and
-| after every request to your application, and you may even create other
-| filters that can be attached to individual routes.
+| routes. The built-in before and after filters are called before and
+| after every request to your application, and you may even create
+| other filters that can be attached to individual routes.
 |
 | Let's walk through an example...
 |

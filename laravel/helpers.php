@@ -230,6 +230,38 @@ function array_divide($array)
 }
 
 /**
+ * Pluck an array of values from an array.
+ *
+ * @param  array   $array
+ * @param  string  $key
+ * @return array
+ */
+function array_pluck($array, $key)
+{
+	return array_map(function($v) use ($key)
+	{
+		return is_object($v) ? $v->$key : $v[$key];
+
+	}, $array);
+}
+
+/**
+ * Transform Eloquent models to a JSON object.
+ *
+ * @param  Eloquent|array  $models
+ * @return object
+ */
+function eloquent_to_json($models)
+{
+	if ($models instanceof Eloquent)
+	{
+		return json_encode($models->to_array());
+	}
+
+	return json_encode(array_map(function($m) { return $m->to_array(); }, $models));
+}
+
+/**
  * Determine if "Magic Quotes" are enabled on the server.
  *
  * @return bool

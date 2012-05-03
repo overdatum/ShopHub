@@ -1,5 +1,6 @@
 <?php namespace Laravel\Database\Eloquent;
 
+use Laravel\Event;
 use Laravel\Database;
 use Laravel\Database\Eloquent\Relationships\Has_Many_And_Belongs_To;
 
@@ -33,7 +34,7 @@ class Query {
 	 */
 	public $passthru = array(
 		'lists', 'only', 'insert', 'insert_get_id', 'update', 'increment',
-		'decrement', 'count', 'min', 'max', 'avg', 'sum',
+		'delete', 'decrement', 'count', 'min', 'max', 'avg', 'sum',
 	);
 
 	/**
@@ -119,12 +120,7 @@ class Query {
 			// We need to set the attributes manually in case the accessible property is
 			// set on the array which will prevent the mass assignemnt of attributes if
 			// we were to pass them in using the constructor or fill methods.
-			foreach ($result as $key => $value)
-			{
-				$new->set_attribute($key, $value);
-			}
-
-			$new->original = $new->attributes;
+			$new->fill_raw($result);
 
 			$models[] = $new;
 		}
@@ -271,8 +267,8 @@ class Query {
 		$result = call_user_func_array(array($this->table, $method), $parameters);
 
 		// Some methods may get their results straight from the fluent query
-		// builder, such as the aggregate methods. If the called method is
-		// one of these, we will return the result straight away.
+		// builder such as the aggregate methods. If the called method is
+		// one of these, we will just return the result straight away.
 		if (in_array($method, $this->passthru))
 		{
 			return $result;

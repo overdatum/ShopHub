@@ -79,6 +79,46 @@ class Response {
 	}
 
 	/**
+	 * Create a new JSON response.
+	 *
+	 * <code>
+	 *		// Create a response instance with JSON
+	 *		return Response::json($data, 200, array('header' => 'value'));
+	 * </code>
+	 *
+	 * @param  mixed     $data
+	 * @param  int       $status
+	 * @param  array     $headers
+	 * @return Response
+	 */
+	public static function json($data, $status = 200, $headers = array())
+	{
+		$headers['Content-Type'] = 'application/json';
+
+		return new static(json_encode($data), $status, $headers);
+	}
+
+	/**
+	 * Create a new response of JSON'd Eloquent models.
+	 *
+	 * <code>
+	 *		// Create a new response instance with Eloquent models
+	 *		return Response::eloquent($data, 200, array('header' => 'value'));
+	 * </code>
+	 *
+	 * @param  Eloquenet|array  $data
+	 * @param  int              $status
+	 * @param  array            $headers
+	 * @return Response
+	 */
+	public static function eloquent($data, $status = 200, $headers = array())
+	{
+		$headers['Content-Type'] = 'application/json';
+
+		return new static(eloquent_to_json($data), $status, $headers);
+	}
+
+	/**
 	 * Create a new error response instance.
 	 *
 	 * The response status code will be set using the specified code.
@@ -174,9 +214,21 @@ class Response {
 			$response = new static($response);
 		}
 
-		$response->render();
-
 		return $response;
+	}
+
+	/**
+	 * Send the headers and content of the response to the browser.
+	 *
+	 * @return void
+	 */
+	public function send()
+	{
+		$this->cookies();
+
+		$this->foundation->prepare(Request::foundation());
+
+		$this->foundation->send();
 	}
 
 	/**
@@ -204,20 +256,6 @@ class Response {
 		$this->foundation->setContent($this->content);
 
 		return $this->content;
-	}
-
-	/**
-	 * Send the headers and content of the response to the browser.
-	 *
-	 * @return void
-	 */
-	public function send()
-	{
-		$this->cookies();
-
-		$this->foundation->prepare(Request::foundation());
-
-		$this->foundation->send();
 	}
 
 	/**
